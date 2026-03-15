@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册账号 - CodeQuest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --border: #0f3460;
+      --text: #eaeaea;
+      --comment: #a0a0a0;
+      --success: #4ade80;
+      --danger: #f87171;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(88, 101, 242, 0.16), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(235, 69, 158, 0.18), transparent 35%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .surface {
+      background: rgba(22, 33, 62, 0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .input-field {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .card {
+      animation: slideIn 0.35s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="card surface rounded-3xl p-8 w-full max-w-md border-2" style="border-color: var(--primary)">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-3 text-2xl" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+        CQ
+      </div>
+      <h1 class="text-2xl font-bold">CodeQuest</h1>
+      <p class="text-sm mt-2" style="color: var(--comment)">QQ 邮箱验证码注册</p>
+    </div>
+
+    <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+      <div>
+        <label for="register-name" class="block text-sm font-medium mb-2">昵称</label>
+        <input
+          id="register-name"
+          type="text"
+          class="input-field w-full px-4 py-3 rounded-xl surface border"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="请输入你的昵称"
+          maxlength="64"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="register-qq" class="block text-sm font-medium mb-2">QQ 号或 QQ 邮箱</label>
+        <div class="flex gap-2">
+          <input
+            id="register-qq"
+            type="text"
+            class="input-field flex-1 px-4 py-3 rounded-xl surface border"
+            style="border-color: var(--border); color: var(--text)"
+            placeholder="如 123456789 或 123456789@qq.com"
+            pattern="([0-9]{5,12}|[0-9]{5,12}@qq\.com)"
+            title="请输入 5-12 位 QQ 号，或 QQ 邮箱"
+            required
+          />
+          <button
+            id="btn-send-code"
+            type="button"
+            class="px-4 py-3 rounded-xl font-medium whitespace-nowrap transition-all"
+            style="background: var(--primary); color: white"
+            onclick="sendCode()"
+          >
+            发送验证码
+          </button>
+        </div>
+        <p id="hint-code" class="text-xs mt-2" style="color: var(--comment)">验证码会发送到对应的 QQ 邮箱。</p>
+      </div>
+
+      <div>
+        <label for="register-code" class="block text-sm font-medium mb-2">邮箱验证码</label>
+        <input
+          id="register-code"
+          type="text"
+          class="input-field w-full px-4 py-3 rounded-xl surface border tracking-[0.3em]"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="请输入 6 位验证码"
+          maxlength="6"
+          pattern="[0-9]{6}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="register-password" class="block text-sm font-medium mb-2">密码</label>
+        <div class="relative">
+          <input
+            id="register-password"
+            type="password"
+            class="input-field w-full px-4 py-3 rounded-xl surface border"
+            style="border-color: var(--border); color: var(--text); padding-right: 44px"
+            placeholder="至少 6 位"
+            minlength="6"
+            required
+          />
+          <button
+            type="button"
+            class="absolute right-3 top-1/2 -translate-y-1/2"
+            style="color: var(--comment)"
+            onclick="togglePassword('register-password', this)"
+          >
+            <i data-lucide="eye-off" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <p class="text-xs mt-2" style="color: var(--comment)">密码强度：<span id="password-strength">-</span></p>
+      </div>
+
+      <div>
+        <label for="register-invite-code" class="block text-sm font-medium mb-2">邀请码</label>
+        <input
+          id="register-invite-code"
+          type="text"
+          class="input-field w-full px-4 py-3 rounded-xl surface border"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="请输入邀请码"
+          required
+        />
+      </div>
+
+      <label class="flex items-start gap-2 text-sm" style="color: var(--comment)">
+        <input id="register-terms" type="checkbox" class="mt-1 rounded" style="accent-color: var(--primary)" required />
+        <span>我已阅读并同意隐私政策与服务条款。</span>
+      </label>
+
+      <button
+        id="submit-btn"
+        type="submit"
+        class="w-full py-3 px-4 rounded-xl font-semibold transition-all hover:opacity-90"
+        style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white"
+      >
+        注册账号
+      </button>
+    </form>
+
+    <div id="message" class="hidden mt-4 p-3 rounded-xl text-sm text-center"></div>
+
+    <div class="mt-6 pt-6 border-t text-center" style="border-color: var(--border)">
+      <p class="text-sm" style="color: var(--comment)">
+        已有账号？
+        <a href="/login-strict.html" class="font-medium underline" style="color: var(--primary)">去登录</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin.includes('localhost')
+      ? `${window.location.protocol}//${window.location.hostname}:3000/api`
+      : '/api';
+
+    let countdown = 0;
+    let countdownTimer = null;
+
+    function normalizeQq(input) {
+      const value = String(input || '').trim();
+      const match = value.match(/^(\d{5,12})@qq\.com$/i);
+      return match ? match[1] : value;
+    }
+
+    function isValidQq(qq) {
+      return /^\d{5,12}$/.test(qq) && !qq.startsWith('0');
+    }
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text;
+      el.className = `mt-4 p-3 rounded-xl text-sm text-center ${
+        type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+      }`;
+      el.classList.remove('hidden');
+    }
+
+    function hideMessage() {
+      document.getElementById('message').classList.add('hidden');
+    }
+
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('i');
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      if (icon) {
+        icon.setAttribute('data-lucide', show ? 'eye' : 'eye-off');
+        lucide.createIcons();
+      }
+    }
+
+    function getPasswordStrength(password) {
+      if (!password) return { text: '-', level: 0 };
+
+      let level = 0;
+      if (password.length >= 6) level += 1;
+      if (password.length >= 10) level += 1;
+      if (/\d/.test(password)) level += 1;
+      if (/[a-z]/i.test(password) && /[A-Z]/.test(password)) level += 1;
+      if (/[^a-zA-Z0-9]/.test(password)) level += 1;
+
+      const labels = ['-', '弱', '一般', '中等', '较强', '强'];
+      return { text: labels[Math.min(level, labels.length - 1)], level };
+    }
+
+    async function sendCode() {
+      hideMessage();
+
+      const raw = document.getElementById('register-qq').value.trim();
+      const qq = normalizeQq(raw);
+      const button = document.getElementById('btn-send-code');
+
+      if (!isValidQq(qq)) {
+        showMessage('请输入正确的 QQ 号或 QQ 邮箱，例如 123456789 或 123456789@qq.com。', 'error');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = '发送中...';
+
+      try {
+        const response = await fetch(`${API_BASE}/email/send-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ qq })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+          showMessage(data.error || '发送验证码失败，请稍后重试。', 'error');
+          document.getElementById('hint-code').textContent = '发送失败后可检查 QQ 号、邀请码流程和邮箱配置。';
+          button.disabled = false;
+          button.textContent = '发送验证码';
+          return;
+        }
+
+        showMessage('验证码已发送到对应的 QQ 邮箱，请查收。', 'success');
+        document.getElementById('hint-code').textContent = '验证码 10 分钟内有效，请尽快完成注册。';
+
+        countdown = 60;
+        button.textContent = `重新发送 (${countdown}s)`;
+
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+        }
+
+        countdownTimer = setInterval(() => {
+          countdown -= 1;
+          if (countdown <= 0) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+            button.disabled = false;
+            button.textContent = '发送验证码';
+            return;
+          }
+
+          button.textContent = `重新发送 (${countdown}s)`;
+        }, 1000);
+      } catch (error) {
+        showMessage('网络错误，发送验证码失败，请稍后重试。', 'error');
+        button.disabled = false;
+        button.textContent = '发送验证码';
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      hideMessage();
+
+      const submitButton = document.getElementById('submit-btn');
+      const name = document.getElementById('register-name').value.trim();
+      const qq = normalizeQq(document.getElementById('register-qq').value.trim());
+      const emailCode = document.getElementById('register-code').value.trim();
+      const password = document.getElementById('register-password').value;
+      const inviteCode = document.getElementById('register-invite-code').value.trim();
+
+      if (!name) {
+        showMessage('请输入昵称。', 'error');
+        return;
+      }
+
+      if (!isValidQq(qq)) {
+        showMessage('请输入正确的 QQ 号或 QQ 邮箱。', 'error');
+        return;
+      }
+
+      if (!/^\d{6}$/.test(emailCode)) {
+        showMessage('请输入 6 位邮箱验证码。', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage('密码至少需要 6 位。', 'error');
+        return;
+      }
+
+      if (!inviteCode) {
+        showMessage('请输入邀请码。', 'error');
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = '注册中...';
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            qq,
+            email_code: emailCode,
+            password,
+            invite_code: inviteCode
+          })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+          showMessage(data.error || '注册失败，请稍后重试。', 'error');
+          submitButton.disabled = false;
+          submitButton.textContent = '注册账号';
+          return;
+        }
+
+        if (data.user?.token) {
+          localStorage.setItem('codequest_token', data.user.token);
+          localStorage.setItem('codequest_user', JSON.stringify(data.user));
+        }
+
+        showMessage('注册成功，正在跳转...', 'success');
+        setTimeout(() => {
+          window.location.href = '/index.html';
+        }, 1000);
+      } catch (error) {
+        showMessage('网络错误，注册失败，请稍后重试。', 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = '注册账号';
+      }
+    }
+
+    document.getElementById('register-password').addEventListener('input', (event) => {
+      const result = getPasswordStrength(event.target.value);
+      const target = document.getElementById('password-strength');
+      target.textContent = result.text;
+      target.style.color = result.level <= 1 ? '#f87171' : result.level <= 3 ? '#fbbf24' : '#4ade80';
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

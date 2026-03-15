@@ -1,0 +1,55 @@
+/* CodeQuest 共享样式 */
+
+body {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* 代码编辑器风格 */
+.code-editor {
+  background: #161b22;
+  border: 1px solid #30363d;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 进度条动画 */
+.progress-bar {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 关卡卡片悬停效果 */
+.level-card {
+  transition: all 0.2s ease-out;
+}
+
+.level-card:hover {
+  transform: translateY(-4px);
+  border-color: #3776ab;
+}
+
+/* 代码高亮 */
+.code-keyword { color: #ff7b72; }
+.code-string { color: #a5d6ff; }
+.code-function { color: #d2a8ff; }
+.code-number { color: #79c0ff; }
+.code-comment { color: #8b949e; }
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}

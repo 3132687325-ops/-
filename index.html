@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="github">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeQuest - Python 王国冒险</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    :root {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --comment: #8b949e;
+    }
+    
+    [data-theme="duolingo"] {
+      --primary: #88c999;
+      --secondary: #b8e6b8;
+      --bg: #f0f8f0;
+      --surface: #e8f4e8;
+      --border: #c9e0c9;
+      --text: #2d3e2d;
+      --comment: #6b7b6b;
+    }
+    
+    [data-theme="python"] {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #1e4a6b;
+      --surface: #2b5b84;
+      --border: #3d7a9f;
+      --text: #ffffff;
+      --comment: #b8d4e8;
+    }
+    
+    [data-theme="dark"] {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --border: #0f3460;
+      --text: #eaeaea;
+      --comment: #a0a0a0;
+    }
+    
+    body {
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+    
+    .surface {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .primary-btn:hover {
+      opacity: 0.9;
+    }
+    
+    .progress-bar {
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .level-card {
+      transition: all 0.2s ease-out;
+    }
+    
+    .level-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    
+    /* 课程列表样式 */
+    .course-item {
+      transition: all 0.2s ease-out;
+      cursor: pointer;
+    }
+    .course-item:hover {
+      transform: translateX(4px);
+      background: rgba(88, 101, 242, 0.1);
+      border-color: var(--primary);
+    }
+    .course-item.coming-soon {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* 块状进度条 */
+    .segmented-progress {
+      display: flex;
+      gap: 3px;
+    }
+    .segment {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .segment.filled {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- 导航栏 -->
+  <nav class="surface sticky top-0 z-50 border-b" style="border-color: var(--border)">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl" style="background: linear-gradient(135deg, #ff6b35, #f7c531)">
+            🔥🔨
+          </div>
+          <span class="text-xl font-bold" style="color: var(--text)">CodeQuest</span>
+        </a>
+        
+        <div class="flex items-center gap-6">
+          <!-- 主题切换 -->
+          <div class="relative">
+            <button onclick="toggleThemeMenu()" class="flex items-center gap-2" style="color: var(--comment)">
+              <i data-lucide="palette" class="w-5 h-5"></i>
+            </button>
+            <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 surface rounded-lg shadow-xl border" style="border-color: var(--border)">
+              <div class="p-2">
+                <button onclick="setTheme('dark')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                  <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #1a1a2e, #5865f2)"></div>
+                  <span style="color: var(--text)">🌙 极夜黑</span>
+                </button>
+                <button onclick="setTheme('duolingo')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                  <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #88c999, #b8e6b8)"></div>
+                  <span style="color: var(--text)">🌿 护眼绿</span>
+                </button>
+                <button onclick="setTheme('python')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                  <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #3776ab, #ffd343)"></div>
+                  <span style="color: var(--text)">🐍 科技蓝</span>
+                </button>
+                <button onclick="setTheme('github')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                  <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #0d1117, #30363d)"></div>
+                  <span style="color: var(--text)">💻 代码灰</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <a href="levels.html" class="hidden md:flex items-center gap-2" style="color: var(--comment)">
+            <i data-lucide="map" class="w-4 h-4"></i>
+            冒险地图
+          </a>
+          <a href="backpack.html" class="hidden md:flex items-center gap-2" style="color: var(--comment)">
+            <i data-lucide="award" class="w-4 h-4"></i>
+            成就
+          </a>
+          
+          <!-- 用户信息 / 登录注册 -->
+          <div id="nav-user" class="flex items-center gap-3">
+            <!-- 已登录：显示名字 + 下拉 -->
+            <div id="nav-user-logged" class="hidden relative">
+              <button onclick="toggleUserMenu()" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:opacity-90 transition-opacity surface border" style="border-color: var(--border); color: var(--text)">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white" id="nav-user-avatar">?</div>
+                <span class="max-w-[120px] truncate" id="nav-user-name">用户</span>
+                <i data-lucide="chevron-down" class="w-4 h-4" style="color: var(--comment)"></i>
+              </button>
+              <div id="nav-user-menu" class="hidden absolute right-0 mt-2 w-40 surface rounded-lg shadow-xl border py-1" style="border-color: var(--border)">
+                <button type="button" onclick="logout(event)" class="w-full text-left px-4 py-2 text-sm hover:opacity-80" style="color: var(--text)">退出登录</button>
+              </div>
+            </div>
+            <!-- 未登录：登录 | 注册 -->
+            <div id="nav-user-guest" class="flex items-center gap-2">
+              <a href="login.html" class="px-3 py-2 rounded-lg font-medium transition-opacity hover:opacity-90" style="color: var(--comment)">登录</a>
+              <a href="register.html" class="px-3 py-2 rounded-lg font-medium transition-all" style="background: var(--primary); color: white">注册</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid lg:grid-cols-4 gap-6">
+      <!-- 左侧课程列表 -->
+      <aside class="lg:col-span-1">
+        <div class="surface rounded-xl p-4 border sticky top-20" style="border-color: var(--border)">
+          <h2 class="text-lg font-bold mb-4" style="color: var(--text)">📚 课程列表</h2>
+          <div class="space-y-2">
+            <div class="course-item surface rounded-lg p-3 border" style="border-color: var(--primary)" onclick="selectCourse('python')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                  🐍
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold" style="color: var(--text)">Python 编程</h3>
+                  <p class="text-xs" style="color: var(--comment)">30 道题 · 已上架</p>
+                </div>
+                <i data-lucide="check-circle" class="w-5 h-5" style="color: var(--primary)"></i>
+              </div>
+            </div>
+            
+            <div class="course-item coming-soon surface rounded-lg p-3 border" style="border-color: var(--border)" onclick="showComingSoon('计算机专升本')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: var(--border)">
+                  💻
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold" style="color: var(--text)">计算机专升本</h3>
+                  <p class="text-xs" style="color: var(--comment)">即将上架</p>
+                </div>
+                <i data-lucide="clock" class="w-5 h-5" style="color: var(--comment)"></i>
+              </div>
+            </div>
+            
+            <div class="course-item coming-soon surface rounded-lg p-3 border" style="border-color: var(--border)" onclick="showComingSoon('英语')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: var(--border)">
+                  📖
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold" style="color: var(--text)">英语</h3>
+                  <p class="text-xs" style="color: var(--comment)">即将上架</p>
+                </div>
+                <i data-lucide="clock" class="w-5 h-5" style="color: var(--comment)"></i>
+              </div>
+            </div>
+            
+            <div class="course-item coming-soon surface rounded-lg p-3 border" style="border-color: var(--border)" onclick="showComingSoon('政治')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: var(--border)">
+                  🇨🇳
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold" style="color: var(--text)">政治</h3>
+                  <p class="text-xs" style="color: var(--comment)">即将上架</p>
+                </div>
+                <i data-lucide="clock" class="w-5 h-5" style="color: var(--comment)"></i>
+              </div>
+            </div>
+            
+            <div class="course-item coming-soon surface rounded-lg p-3 border" style="border-color: var(--border)" onclick="showComingSoon('高等数学')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: var(--border)">
+                  📐
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold" style="color: var(--text)">高等数学</h3>
+                  <p class="text-xs" style="color: var(--comment)">即将上架</p>
+                </div>
+                <i data-lucide="clock" class="w-5 h-5" style="color: var(--comment)"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- 右侧主内容区 -->
+      <div class="lg:col-span-3">
+        <!-- 故事引言 -->
+        <div class="surface rounded-xl p-6 mb-8 border" style="border-color: var(--border)">
+          <div class="flex items-start gap-4">
+            <div class="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+              🐍
+            </div>
+            <div class="flex-1">
+              <h1 class="text-2xl font-bold mb-2" style="color: var(--text)">🎯 Python 王国冒险记</h1>
+              <p class="mb-4" style="color: var(--comment)">
+                你是一名初出茅庐的 coder，意外进入了神秘的 Python 王国。
+                王国被三个魔法封印锁住，你需要完成 30 个挑战，解开所有封印，成为 Python 大师！
+              </p>
+              <a href="levels.html" class="inline-flex items-center gap-2 py-3 px-6 primary-btn rounded-lg font-semibold transition-all">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                开始冒险
+              </a>
+            </div>
+          </div>
+        </div>
+
+    <!-- 进度卡片 -->
+    <div class="grid lg:grid-cols-3 gap-6 mb-8">
+      <!-- 角色卡片 -->
+      <div class="surface rounded-xl p-6 border lg:col-span-2" style="border-color: var(--border)">
+        <div class="flex items-start gap-4">
+          <div class="w-20 h-20 rounded-xl flex items-center justify-center text-4xl flex-shrink-0" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+            🧙‍♂️
+          </div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-2" style="color: var(--text)">Python 学徒</h2>
+            <p class="mb-4" style="color: var(--comment)">
+              已完成 <span class="font-mono" style="color: var(--primary)">0/30</span> 个挑战
+            </p>
+            
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span style="color: var(--comment)">📊 总进度</span>
+                  <span class="font-mono" style="color: var(--primary)">0%</span>
+                </div>
+                <div class="h-3 rounded-full overflow-hidden" style="background: var(--border)">
+                  <div class="h-full progress-bar" style="width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary))"></div>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span style="color: var(--comment)">⭐ 经验值</span>
+                <span class="font-mono" style="color: var(--primary)">0 / 450 XP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 快速统计 -->
+      <div class="space-y-4">
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="book-open" class="w-5 h-5" style="color: var(--primary)"></i>
+            </div>
+            <span style="color: var(--comment)">已完成</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="completed-count" style="color: var(--text)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">共 30 题</p>
+        </div>
+        
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="trophy" class="w-5 h-5" style="color: #ffd700"></i>
+            </div>
+            <span style="color: var(--comment)">成就</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="achievements-count" style="color: var(--text)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">共 8 个</p>
+        </div>
+        
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="award" class="w-5 h-5" style="color: var(--primary)"></i>
+            </div>
+            <span style="color: var(--comment)">总 XP</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="total-xp" style="color: var(--primary)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">继续加油！</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 快速统计 + 每日挑战 -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <!-- 快速统计 -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold" style="color: var(--text)">📊 学习统计</h3>
+        
+        <!-- 学习时间 + 完成题目 -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="surface rounded-xl p-4 border" style="border-color: var(--border)">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(76, 175, 80, 0.2)">
+                <i data-lucide="clock" class="w-4 h-4" style="color: #4caf50"></i>
+              </div>
+              <span class="text-xs" style="color: var(--comment)">学习时间</span>
+            </div>
+            <p class="text-2xl font-bold font-mono" id="study-time" style="color: #4caf50">0</p>
+            <p class="text-xs mt-1" style="color: var(--comment)">小时</p>
+          </div>
+          
+          <div class="surface rounded-xl p-4 border" style="border-color: var(--border)">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(88, 101, 242, 0.2)">
+                <i data-lucide="circle-check" class="w-4 h-4" style="color: var(--primary)"></i>
+              </div>
+              <span class="text-xs" style="color: var(--comment)">完成题目</span>
+            </div>
+            <p class="text-2xl font-bold font-mono" id="questions-completed" style="color: var(--primary)">0</p>
+            <p class="text-xs mt-1" style="color: var(--comment)">道题</p>
+          </div>
+        </div>
+        
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="book-open" class="w-5 h-5" style="color: var(--primary)"></i>
+            </div>
+            <span style="color: var(--comment)">已完成</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="completed-count" style="color: var(--text)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">共 30 题</p>
+        </div>
+        
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="trophy" class="w-5 h-5" style="color: #ffd700"></i>
+            </div>
+            <span style="color: var(--comment)">成就</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="achievements-count" style="color: var(--text)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">共 8 个</p>
+        </div>
+        
+        <div class="surface rounded-xl p-5 border" style="border-color: var(--border)">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <i data-lucide="award" class="w-5 h-5" style="color: var(--primary)"></i>
+            </div>
+            <span style="color: var(--comment)">总 XP</span>
+          </div>
+          <p class="text-3xl font-bold font-mono" id="total-xp" style="color: var(--primary)">0</p>
+          <p class="text-sm mt-1" style="color: var(--comment)">继续加油！</p>
+        </div>
+        
+        <!-- 块状进度条 -->
+        <div class="surface rounded-xl p-4 border" style="border-color: var(--border)">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold" style="color: var(--text)">总进度</span>
+            <span class="text-sm font-mono" id="progress-percent" style="color: var(--primary)">0%</span>
+          </div>
+          <div class="segmented-progress" id="progress-bar">
+            <!-- 10 个进度块 -->
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 每日挑战 -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold" style="color: var(--text)">🎯 每日挑战</h3>
+        
+        <a href="daily-challenge.html" class="block surface rounded-xl p-6 border-2 hover:shadow-lg transition-all h-full" style="border-color: var(--primary)">
+          <div class="text-center mb-4">
+            <div class="text-5xl mb-3">🔥🔨</div>
+            <h2 class="text-xl font-bold mb-2" style="color: var(--text)">锻造你的技能</h2>
+            <p style="color: var(--comment)">完成每日挑战，获得双倍 XP！</p>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="surface rounded-lg p-3 text-center" style="background: rgba(88, 101, 242, 0.1)">
+              <div class="text-2xl mb-1">⏱️</div>
+              <p class="text-xs" style="color: var(--comment)">限时</p>
+              <p class="text-sm font-bold" style="color: var(--primary)">10 分钟</p>
+            </div>
+            <div class="surface rounded-lg p-3 text-center" style="background: rgba(255, 193, 7, 0.1)">
+              <div class="text-2xl mb-1">💪</div>
+              <p class="text-xs" style="color: var(--comment)">难度</p>
+              <p class="text-sm font-bold" style="color: var(--secondary)">中等</p>
+            </div>
+            <div class="surface rounded-lg p-3 text-center" style="background: rgba(255, 215, 0, 0.1)">
+              <div class="text-2xl mb-1">🎁</div>
+              <p class="text-xs" style="color: var(--comment)">奖励</p>
+              <p class="text-sm font-bold" style="color: #ffd700">50 XP</p>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="inline-flex items-center gap-2 py-2 px-6 rounded-lg font-semibold transition-all" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              开始挑战
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    
+    <!-- 冒险地图 -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold flex items-center gap-2" style="color: var(--text)">
+          <i data-lucide="map" class="w-6 h-6" style="color: var(--primary)"></i>
+          冒险地图
+        </h2>
+        <a href="levels.html" class="font-medium flex items-center gap-1" style="color: var(--primary)">
+          查看全部
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 关卡 1 -->
+        <a href="levels.html" class="level-card surface rounded-xl p-5 cursor-pointer border hover:shadow-lg" style="border-color: var(--border)">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style="background: rgba(88, 204, 2, 0.2)">
+              🔥🔨
+            </div>
+            <span class="text-xs font-mono" style="color: var(--comment)">Lv.1</span>
+          </div>
+          <h3 class="font-semibold mb-1" style="color: var(--text)">魔法学院入学</h3>
+          <p class="text-sm mb-3" style="color: var(--comment)">变量、数据类型、基础运算</p>
+          <div class="segmented-progress mb-2">
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+            <div class="segment"></div>
+          </div>
+          <p class="text-xs font-mono" style="color: var(--comment)">0/10 已完成</p>
+        </a>
+        
+        <!-- 关卡 2 - 锁定 -->
+        <div class="surface rounded-xl p-5 cursor-not-allowed border opacity-60" style="border-color: var(--border)">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <span class="text-2xl">🌀</span>
+            </div>
+            <span class="text-xs font-mono" style="color: var(--comment)">Lv.2</span>
+          </div>
+          <h3 class="font-semibold mb-1" style="color: var(--text)">神秘迷宫探险</h3>
+          <p class="text-sm mb-3" style="color: var(--comment)">条件判断、循环语句</p>
+          <div class="flex items-center gap-1" style="color: var(--comment)">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+            <span class="text-xs">完成 Lv.1 解锁</span>
+          </div>
+        </div>
+        
+        <!-- 关卡 3 - 锁定 -->
+        <div class="surface rounded-xl p-5 cursor-not-allowed border opacity-60" style="border-color: var(--border)">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: var(--border)">
+              <span class="text-2xl">⚔️</span>
+            </div>
+            <span class="text-xs font-mono" style="color: var(--comment)">Lv.3</span>
+          </div>
+          <h3 class="font-semibold mb-1" style="color: var(--text)">决战黑暗法师</h3>
+          <p class="text-sm mb-3" style="color: var(--comment)">函数定义、参数、返回值</p>
+          <div class="flex items-center gap-1" style="color: var(--comment)">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+            <span class="text-xs">完成 Lv.2 解锁</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 主题切换
+    function setTheme(themeId) {
+      document.documentElement.setAttribute('data-theme', themeId);
+      localStorage.setItem('codequest_theme', themeId);
+      document.getElementById('theme-menu').classList.add('hidden');
+    }
+    
+    function toggleThemeMenu() {
+      document.getElementById('theme-menu').classList.toggle('hidden');
+    }
+    
+    // 加载保存的主题（默认深色模式）
+    const savedTheme = localStorage.getItem('codequest_theme') || 'dark';
+    setTheme(savedTheme);
+    
+    // 点击外部关闭菜单
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('theme-menu');
+      if (!e.target.closest('.relative') && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+      const userMenu = document.getElementById('nav-user-menu');
+      const userLogged = document.getElementById('nav-user-logged');
+      if (userMenu && userLogged && !e.target.closest('#nav-user-logged') && !userMenu.classList.contains('hidden')) {
+        userMenu.classList.add('hidden');
+      }
+    });
+    
+    // 用户信息：已登录显示名字，未登录显示登录/注册
+    function initNavUser() {
+      try {
+        const userStr = localStorage.getItem('codequest_user');
+        const logged = document.getElementById('nav-user-logged');
+        const guest = document.getElementById('nav-user-guest');
+        if (!userStr || !logged || !guest) return;
+        const user = JSON.parse(userStr);
+        if (user && (user.qq || user.email)) {
+          const name = user.name || user.qq || user.email || '用户';
+          document.getElementById('nav-user-name').textContent = name;
+          const avatar = document.getElementById('nav-user-avatar');
+          if (avatar) avatar.textContent = name.charAt(0).toUpperCase();
+          logged.classList.remove('hidden');
+          guest.classList.add('hidden');
+        } else {
+          logged.classList.add('hidden');
+          guest.classList.remove('hidden');
+        }
+      } catch (e) {
+        document.getElementById('nav-user-logged').classList.add('hidden');
+        document.getElementById('nav-user-guest').classList.remove('hidden');
+      }
+    }
+    function toggleUserMenu() {
+      const menu = document.getElementById('nav-user-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+    function logout(e) {
+      if (e) e.preventDefault();
+      localStorage.removeItem('codequest_token');
+      localStorage.removeItem('codequest_user');
+      window.location.href = 'login.html';
+      return false;
+    }
+    initNavUser();
+    
+    // 更新进度显示
+    function updateStats() {
+      const progress = JSON.parse(localStorage.getItem('codequest_progress') || '{}');
+      const completed = Object.keys(progress).filter(id => progress[id].completed).length;
+      const totalXP = completed * 10;
+      const achievements = Math.floor(completed / 10); // 每 10 题一个成就
+      const percentage = Math.round((completed / 30) * 100);
+      
+      // 学习时间（从 localStorage 读取，单位：秒）
+      const studyTimeSeconds = parseInt(localStorage.getItem('codequest_study_time') || '0');
+      const studyTimeHours = (studyTimeSeconds / 3600).toFixed(1);
+      
+      // 如果有登录用户，从用户数据读取
+      const currentUser = localStorage.getItem('codequest_current_user');
+      if (currentUser) {
+        const users = JSON.parse(localStorage.getItem('codequest_users') || '{}');
+        const user = users[currentUser];
+        if (user && user.stats) {
+          // 合并 localStorage 和用户数据的学习时间
+          const userStudyTime = user.stats.studyTime || 0;
+          const totalStudyTime = studyTimeSeconds + userStudyTime;
+          document.getElementById('study-time').textContent = (totalStudyTime / 3600).toFixed(1);
+        } else {
+          document.getElementById('study-time').textContent = studyTimeHours;
+        }
+      } else {
+        document.getElementById('study-time').textContent = studyTimeHours;
+      }
+      
+      document.getElementById('questions-completed').textContent = completed;
+      document.getElementById('completed-count').textContent = completed;
+      document.getElementById('total-xp').textContent = totalXP;
+      document.getElementById('achievements-count').textContent = achievements;
+      document.getElementById('progress-percent').textContent = percentage + '%';
+      
+      // 更新块状进度条（10 个块）
+      const filledSegments = Math.round(completed / 3); // 每 3 题填满一个块
+      const segments = document.querySelectorAll('.segment');
+      segments.forEach((segment, index) => {
+        if (index < filledSegments) {
+          segment.classList.add('filled');
+        } else {
+          segment.classList.remove('filled');
+        }
+      });
+    }
+    
+    updateStats();
+    lucide.createIcons();
+    
+    // 选择课程
+    function selectCourse(courseName) {
+      if (courseName === 'python') {
+        // Python 课程已上架，跳转到冒险地图
+        window.location.href = 'levels.html';
+      }
+    }
+    
+    // 显示即将上架提示
+    function showComingSoon(courseName) {
+      const messages = {
+        '计算机专升本': '💡 计算机专升本题库正在紧张制作中，预计下个月上架！敬请期待~',
+        '英语': '💡 英语课程正在编写中，包括词汇、语法、阅读理解等模块，敬请期待！',
+        '政治': '💡 政治题库正在整理中，涵盖马原、毛概、思修等核心考点，敬请期待！',
+        '高等数学': '💡 高等数学题库正在准备中，包括微积分、线性代数等内容，敬请期待！'
+      };
+      
+      const message = messages[courseName] || '💡 该课程正在紧张制作中，敬请期待！';
+      
+      // 创建提示弹窗
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="surface rounded-xl p-6 max-w-md mx-4 border-2" style="border-color: var(--primary); background: var(--surface)">
+          <div class="text-center mb-4">
+            <div class="text-5xl mb-4">🚧</div>
+            <h3 class="text-xl font-bold mb-2" style="color: var(--text)">课程即将上架</h3>
+            <p style="color: var(--comment)">${message}</p>
+          </div>
+          <div class="flex items-center justify-center gap-2 mb-4">
+            <div class="w-2 h-2 rounded-full" style="background: var(--primary)"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--secondary)"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--primary)"></div>
+          </div>
+          <button onclick="this.closest('.fixed').remove()" class="w-full py-2 px-4 rounded-lg font-semibold transition-all" style="background: var(--primary); color: white">
+            知道了
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // 3 秒后自动关闭
+      setTimeout(() => {
+        if (modal.parentNode) {
+          modal.remove();
+        }
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

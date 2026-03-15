@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>功能测试 - CodeQuest</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #1a1a2e;
+      color: #eaeaea;
+    }
+    h1 { color: #5865f2; }
+    .test-item {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+    .test-item h3 {
+      margin: 0 0 10px 0;
+      color: #5865f2;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .pass { background: #4caf50; color: white; }
+    .fail { background: #f44336; color: white; }
+    .pending { background: #ffc107; color: black; }
+    button {
+      background: #5865f2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { opacity: 0.9; }
+    pre {
+      background: #0d1117;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 CodeQuest 功能测试</h1>
+  <p>自动测试所有页面和功能</p>
+  
+  <div id="test-results"></div>
+  
+  <button onclick="runAllTests()">运行所有测试</button>
+  
+  <script>
+    const tests = [
+      {
+        name: '首页加载',
+        url: 'index.html',
+        check: (doc) => {
+          const title = doc.querySelector('title');
+          const hasThemeSwitch = doc.querySelector('[onclick="toggleThemeMenu"]');
+          const hasDailyChallenge = doc.querySelector('[href="daily-challenge.html"]');
+          return title && hasThemeSwitch && hasDailyChallenge;
+        }
+      },
+      {
+        name: '冒险地图加载',
+        url: 'levels.html',
+        check: (doc) => {
+          const title = doc.querySelector('title');
+          const hasThemeSwitch = doc.querySelector('[onclick="toggleThemeMenu"]');
+          const hasQuestions = doc.getElementById('level1-questions');
+          return title && hasThemeSwitch && hasQuestions;
+        }
+      },
+      {
+        name: '答题页面加载',
+        url: 'question.html',
+        check: (doc) => {
+          const hasMonaco = doc.querySelector('[id="monaco-container"]');
+          const hasAnswerButton = doc.querySelector('[onclick="toggleAnswer"]');
+          const hasHintButton = doc.querySelector('[onclick="toggleHint"]');
+          return hasMonaco && hasAnswerButton && hasHintButton;
+        }
+      },
+      {
+        name: '每日挑战页面加载',
+        url: 'daily-challenge.html',
+        check: (doc) => {
+          const hasStartButton = doc.querySelector('[onclick="startChallenge"]');
+          const hasStreak = doc.getElementById('streak-count');
+          return hasStartButton && hasStreak;
+        }
+      },
+      {
+        name: '题目数据加载',
+        url: 'content/questions.json',
+        check: (data) => {
+          const has3Levels = data.levels && data.levels.length === 3;
+          const has30Questions = data.levels.reduce((sum, level) => sum + level.questions.length, 0) === 30;
+          return has3Levels && has30Questions;
+        },
+        isJSON: true
+      }
+    ];
+    
+    async function runAllTests() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '';
+      
+      let passed = 0;
+      let failed = 0;
+      
+      for (const test of tests) {
+        const item = document.createElement('div');
+        item.className = 'test-item';
+        
+        try {
+          const response = await fetch(test.url);
+          let data;
+          
+          if (test.isJSON) {
+            data = await response.json();
+          } else {
+            const html = await response.text();
+            const parser = new DOMParser();
+            data = parser.parseFromString(html, 'text/html');
+          }
+          
+          const result = test.check(data);
+          
+          if (result) {
+            passed++;
+            item.innerHTML = `
+              <h3>✅ ${test.name} <span class="status pass">通过</span></h3>
+              <p>URL: ${test.url}</p>
+            `;
+          } else {
+            failed++;
+            item.innerHTML = `
+              <h3>❌ ${test.name} <span class="status fail">失败</span></h3>
+              <p>URL: ${test.url}</p>
+              <pre>检查函数返回 false</pre>
+            `;
+          }
+        } catch (error) {
+          failed++;
+          item.innerHTML = `
+            <h3>❌ ${test.name} <span class="status fail">错误</span></h3>
+            <p>URL: ${test.url}</p>
+            <pre>${error.message}</pre>
+          `;
+        }
+        
+        resultsDiv.appendChild(item);
+      }
+      
+      // 总结
+      const summary = document.createElement('div');
+      summary.className = 'test-item';
+      summary.style.background = failed === 0 ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)';
+      summary.innerHTML = `
+        <h3>📊 测试总结</h3>
+        <p>总计：${tests.length} 项测试</p>
+        <p>✅ 通过：${passed}</p>
+        <p>❌ 失败：${failed}</p>
+        <p>通过率：${((passed / tests.length) * 100).toFixed(0)}%</p>
+      `;
+      
+      resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+    }
+    
+    // 页面加载时自动运行测试
+    window.addEventListener('load', runAllTests);
+  </script>
+</body>
+</html>

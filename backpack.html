@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的成就 - CodeQuest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            primary: { 500: 'oklch(0.65 0.25 280)', 600: 'oklch(0.55 0.28 280)' },
+            success: 'oklch(0.72 0.19 142)', warning: 'oklch(0.78 0.18 66)', danger: 'oklch(0.63 0.24 25)',
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="stylesheet" href="css/shared.css">
+</head>
+<body class="bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)] min-h-screen">
+  <nav class="glass sticky top-0 z-50 border-b border-[oklch(0.2_0_0)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-success flex items-center justify-center">
+            <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-xl font-bold bg-gradient-to-r from-primary-500 to-success bg-clip-text text-transparent">CodeQuest</span>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+          <a href="levels.html" class="text-[oklch(0.7_0_0)] hover:text-white transition-colors flex items-center gap-2">
+            <i data-lucide="map" class="w-4 h-4"></i>学习路径
+          </a>
+          <a href="leaderboard.html" class="text-[oklch(0.7_0_0)] hover:text-white transition-colors flex items-center gap-2">
+            <i data-lucide="trophy" class="w-4 h-4"></i>排行榜
+          </a>
+          <a href="backpack.html" class="text-white font-medium flex items-center gap-2">
+            <i data-lucide="package" class="w-4 h-4"></i>我的成就
+          </a>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="relative p-2 text-[oklch(0.7_0_0)] hover:text-white"><i data-lucide="bell" class="w-5 h-5"></i></button>
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-mono text-primary-500 hidden sm:inline">LV.12</span>
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face" alt="Avatar" class="w-9 h-9 rounded-full border-2 border-primary-500">
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold flex items-center gap-2 mb-2">
+        <i data-lucide="backpack" class="w-8 h-8 text-primary-500"></i>
+        我的背包
+      </h1>
+      <p class="text-[oklch(0.6_0_0)]">查看你收集的编程成就、徽章和道具</p>
+    </div>
+
+    <!-- 货币/积分 -->
+    <div class="grid sm:grid-cols-3 gap-4 mb-8">
+      <div class="glass rounded-2xl p-6 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-xl bg-warning/20 flex items-center justify-center">
+          <i data-lucide="coins" class="w-8 h-8 text-warning"></i>
+        </div>
+        <div>
+          <p class="text-[oklch(0.6_0_0)] text-sm">金币</p>
+          <p class="text-2xl font-bold font-mono">1,280</p>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-6 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-xl bg-primary-500/20 flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-8 h-8 text-primary-500"></i>
+        </div>
+        <div>
+          <p class="text-[oklch(0.6_0_0)] text-sm">经验值 (XP)</p>
+          <p class="text-2xl font-bold font-mono text-primary-500">1,250</p>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-6 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-xl bg-success/20 flex items-center justify-center">
+          <i data-lucide="gift" class="w-8 h-8 text-success"></i>
+        </div>
+        <div>
+          <p class="text-[oklch(0.6_0_0)] text-sm">兑换券</p>
+          <p class="text-2xl font-bold font-mono">5</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 成就徽章 -->
+    <section class="mb-8">
+      <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
+        <i data-lucide="award" class="w-5 h-5 text-warning"></i>成就徽章
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="level-card glass rounded-xl p-4 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-success/20 flex items-center justify-center text-3xl mx-auto mb-2">🌟</div>
+          <p class="font-medium text-sm">第一行代码</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">完成 Python 入门关</p>
+        </div>
+        <div class="level-card glass rounded-xl p-4 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-success/20 flex items-center justify-center text-3xl mx-auto mb-2">🔥</div>
+          <p class="font-medium text-sm">连续编程</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">7 天打卡</p>
+        </div>
+        <div class="level-card glass rounded-xl p-4 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-primary-500/20 flex items-center justify-center text-3xl mx-auto mb-2">⚡</div>
+          <p class="font-medium text-sm">快手编程</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">10 分钟内通关一关</p>
+        </div>
+        <div class="level-card glass rounded-xl p-4 text-center opacity-60">
+          <div class="w-16 h-16 rounded-2xl bg-[oklch(0.2_0_0)] flex items-center justify-center text-3xl mx-auto mb-2">🎯</div>
+          <p class="font-medium text-sm text-[oklch(0.5_0_0)]">全能王</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">待解锁</p>
+        </div>
+        <div class="level-card glass rounded-xl p-4 text-center opacity-60">
+          <div class="w-16 h-16 rounded-2xl bg-[oklch(0.2_0_0)] flex items-center justify-center text-3xl mx-auto mb-2">👑</div>
+          <p class="font-medium text-sm text-[oklch(0.5_0_0)]">排行榜第一</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">待解锁</p>
+        </div>
+        <div class="level-card glass rounded-xl p-4 text-center opacity-60">
+          <div class="w-16 h-16 rounded-2xl bg-[oklch(0.2_0_0)] flex items-center justify-center text-3xl mx-auto mb-2">🏆</div>
+          <p class="font-medium text-sm text-[oklch(0.5_0_0)]">Python 大师</p>
+          <p class="text-xs text-[oklch(0.5_0_0)]">待解锁</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 道具卡片 -->
+    <section>
+      <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
+        <i data-lucide="package" class="w-5 h-5 text-primary-500"></i>道具卡
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="glass rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary-500/20 flex items-center justify-center shrink-0">
+            <i data-lucide="clock" class="w-6 h-6 text-primary-500"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium">时间加成卡</p>
+            <p class="text-sm text-[oklch(0.5_0_0)]">编程挑战时间 +30 秒</p>
+          </div>
+          <span class="font-mono font-bold text-primary-500">x3</span>
+        </div>
+        <div class="glass rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center shrink-0">
+            <i data-lucide="help-circle" class="w-6 h-6 text-success"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium">提示卡</p>
+            <p class="text-sm text-[oklch(0.5_0_0)]">获得一次编程提示</p>
+          </div>
+          <span class="font-mono font-bold text-success">x2</span>
+        </div>
+        <div class="glass rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center shrink-0">
+            <i data-lucide="zap" class="w-6 h-6 text-warning"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium">双倍 XP 卡</p>
+            <p class="text-sm text-[oklch(0.5_0_0)]">下一关经验翻倍</p>
+          </div>
+          <span class="font-mono font-bold text-warning">x1</span>
+        </div>
+      </div>
+    </section>
+
+    <a href="index.html" class="inline-flex items-center gap-2 text-primary-500 hover:text-primary-400 font-medium mt-8">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>返回首页
+    </a>
+  </main>
+
+  <script src="js/shared.js"></script>
+</body>
+</html>

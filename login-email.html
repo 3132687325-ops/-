@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>邮箱验证登录 - CodeQuest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --secondary: #2563eb;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --comment: #94a3b8;
+    }
+    body { background: var(--bg); color: var(--text); }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .input-field { transition: all 0.2s; }
+    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="surface rounded-2xl p-8 w-full max-w-md border-2" style="border-color: var(--primary)">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 text-3xl" style="background: linear-gradient(135deg, #ff6b35, #f7c531)">
+        🔥🔨
+      </div>
+      <h1 class="text-2xl font-bold mb-2">CodeQuest</h1>
+      <p style="color: var(--comment)">邮箱验证登录</p>
+    </div>
+    
+    <!-- 切换标签 -->
+    <div class="flex mb-6">
+      <button onclick="showTab('register')" id="tab-register" class="flex-1 py-2 px-4 rounded-lg font-semibold transition-all" style="background: var(--primary); color: white">注册</button>
+      <button onclick="showTab('login')" id="tab-login" class="flex-1 py-2 px-4 rounded-lg font-semibold transition-all" style="background: transparent; color: var(--comment)">登录</button>
+    </div>
+    
+    <!-- 注册表单 -->
+    <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+      <div>
+        <label class="block text-sm font-medium mb-2">
+          <i data-lucide="mail" class="w-4 h-4 inline mr-1"></i>
+          邮箱地址
+        </label>
+        <div class="flex gap-2">
+          <input 
+            type="email" 
+            id="register-email" 
+            class="input-field flex-1 px-4 py-3 rounded-lg surface border focus:outline-none"
+            style="border-color: var(--border); color: var(--text)"
+            placeholder="your@email.com"
+            required
+          />
+          <button 
+            type="button"
+            onclick="sendCode()"
+            id="send-code-btn"
+            class="px-4 py-3 rounded-lg font-medium transition-all whitespace-nowrap"
+            style="background: var(--surface); color: var(--primary); border: 1px solid var(--primary)"
+          >
+            发送验证码
+          </button>
+        </div>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium mb-2">
+          <i data-lucide="shield" class="w-4 h-4 inline mr-1"></i>
+          验证码
+        </label>
+        <input 
+          type="text" 
+          id="register-code" 
+          class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none tracking-widest"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="输入 6 位验证码"
+          maxlength="6"
+          required
+        />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium mb-2">
+          <i data-lucide="lock" class="w-4 h-4 inline mr-1"></i>
+          密码
+        </label>
+        <input 
+          type="password" 
+          id="register-password" 
+          class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="至少 6 位"
+          minlength="6"
+          required
+        />
+      </div>
+      
+      <button 
+        type="submit" 
+        class="w-full py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white"
+      >
+        <i data-lucide="user-plus" class="w-5 h-5 inline mr-2"></i>
+        注册
+      </button>
+    </form>
+    
+    <!-- 登录表单 -->
+    <form id="login-form" class="space-y-4 hidden" onsubmit="handleLogin(event)">
+      <div>
+        <label class="block text-sm font-medium mb-2">
+          <i data-lucide="mail" class="w-4 h-4 inline mr-1"></i>
+          邮箱地址
+        </label>
+        <input 
+          type="email" 
+          id="login-email" 
+          class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="your@email.com"
+          required
+        />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium mb-2">
+          <i data-lucide="lock" class="w-4 h-4 inline mr-1"></i>
+          密码
+        </label>
+        <input 
+          type="password" 
+          id="login-password" 
+          class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none"
+          style="border-color: var(--border); color: var(--text)"
+          placeholder="请输入密码"
+          required
+        />
+      </div>
+      
+      <button 
+        type="submit" 
+        class="w-full py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white"
+      >
+        <i data-lucide="log-in" class="w-5 h-5 inline mr-2"></i>
+        登录
+      </button>
+    </form>
+    
+    <!-- 提示信息 -->
+    <div id="message" class="hidden mt-4 p-3 rounded-lg text-sm text-center"></div>
+    
+    <!-- 底部提示 -->
+    <div class="mt-6 pt-6 border-t text-center" style="border-color: var(--border)">
+      <p class="text-sm" style="color: var(--comment)">
+        🔒 使用真实邮箱，保障账号安全
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+    
+    // 切换标签
+    function showTab(tab) {
+      const registerForm = document.getElementById('register-form');
+      const loginForm = document.getElementById('login-form');
+      const registerTab = document.getElementById('tab-register');
+      const loginTab = document.getElementById('tab-login');
+      
+      if (tab === 'register') {
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        registerTab.style.background = 'var(--primary)';
+        registerTab.style.color = 'white';
+        loginTab.style.background = 'transparent';
+        loginTab.style.color = 'var(--comment)';
+      } else {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        loginTab.style.background = 'var(--primary)';
+        loginTab.style.color = 'white';
+        registerTab.style.background = 'transparent';
+        registerTab.style.color = 'var(--comment)';
+      }
+      hideMessage();
+    }
+    
+    // 发送验证码
+    async function sendCode() {
+      const email = document.getElementById('register-email').value.trim();
+      const btn = document.getElementById('send-code-btn');
+      
+      // 验证邮箱格式
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showMessage('请输入有效的邮箱地址', 'error');
+        return;
+      }
+      
+      // 禁用按钮
+      btn.disabled = true;
+      btn.textContent = '发送中...';
+      
+      try {
+        const res = await fetch(`${API_BASE}/email/send-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showMessage('✅ 验证码已发送到邮箱', 'success');
+          
+          // 倒计时
+          let seconds = 60;
+          const interval = setInterval(() => {
+            seconds--;
+            btn.textContent = `${seconds}秒后重发`;
+            if (seconds <= 0) {
+              clearInterval(interval);
+              btn.disabled = false;
+              btn.textContent = '发送验证码';
+            }
+          }, 1000);
+        } else {
+          showMessage('❌ ' + data.error, 'error');
+          btn.disabled = false;
+          btn.textContent = '发送验证码';
+        }
+      } catch (error) {
+        showMessage('❌ 发送失败，请检查邮箱配置', 'error');
+        btn.disabled = false;
+        btn.textContent = '发送验证码';
+      }
+    }
+    
+    // 注册
+    async function handleRegister(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('register-email').value.trim();
+      const code = document.getElementById('register-code').value;
+      const password = document.getElementById('register-password').value;
+      
+      // 验证邮箱
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showMessage('❌ 邮箱格式不正确', 'error');
+        return;
+      }
+      
+      // 验证验证码
+      if (code.length !== 6) {
+        showMessage('❌ 请输入 6 位验证码', 'error');
+        return;
+      }
+      
+      // 验证密码
+      if (password.length < 6) {
+        showMessage('❌ 密码至少 6 位', 'error');
+        return;
+      }
+      
+      try {
+        // 先验证邮箱验证码
+        const verifyRes = await fetch(`${API_BASE}/email/verify-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+        
+        const verifyData = await verifyRes.json();
+        
+        if (!verifyData.success) {
+          showMessage('❌ ' + verifyData.error, 'error');
+          return;
+        }
+        
+        // 验证码正确，注册账号（这里简化处理，实际应该调用注册 API）
+        localStorage.setItem('codequest_current_user', email);
+        localStorage.setItem('codequest_user_email', email);
+        
+        showMessage('✅ 注册成功！正在跳转...', 'success');
+        
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } catch (error) {
+        showMessage('❌ 注册失败', 'error');
+      }
+    }
+    
+    // 登录
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      
+      // 这里简化处理，实际应该调用后端 API
+      // 模拟登录成功
+      localStorage.setItem('codequest_current_user', email);
+      localStorage.setItem('codequest_user_email', email);
+      
+      showMessage('✅ 登录成功！正在跳转...', 'success');
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+    }
+    
+    // 显示消息
+    function showMessage(text, type) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = `mt-4 p-3 rounded-lg text-sm text-center ${
+        type === 'success' ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'
+      }`;
+      message.classList.remove('hidden');
+    }
+    
+    function hideMessage() {
+      document.getElementById('message').classList.add('hidden');
+    }
+    
+    // 检查是否已登录
+    const currentUser = localStorage.getItem('codequest_current_user');
+    if (currentUser) {
+      window.location.href = 'index.html';
+    }
+    
+    lucide.createIcons();
+  </script>
+</body>
+</html>

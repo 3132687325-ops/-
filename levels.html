@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冒险地图 - CodeQuest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --border: #0f3460;
+      --text: #eaeaea;
+      --comment: #a0a0a0;
+    }
+    [data-theme="duolingo"] {
+      --primary: #88c999;
+      --secondary: #b8e6b8;
+      --bg: #f0f8f0;
+      --surface: #e8f4e8;
+      --border: #c9e0c9;
+      --text: #2d3e2d;
+      --comment: #6b7b6b;
+    }
+    [data-theme="python"] {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #1e4a6b;
+      --surface: #2b5b84;
+      --border: #3d7a9f;
+      --text: #ffffff;
+      --comment: #b8d4e8;
+    }
+    [data-theme="github"] {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --comment: #8b949e;
+    }
+    
+    body { background: var(--bg); color: var(--text); transition: all 0.3s ease; }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .progress-bar { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    
+    .level-card {
+      transition: all 0.2s ease-out;
+    }
+    .level-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <nav class="surface sticky top-0 z-50 border-b">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2" style="color: var(--comment)">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        <span>返回首页</span>
+      </a>
+      
+      <div class="flex items-center gap-3">
+        <div id="nav-user-levels" class="flex items-center gap-2 text-sm">
+          <span id="nav-user-name-levels" class="hidden max-w-[100px] truncate" style="color: var(--text)"></span>
+          <a href="login.html" id="nav-logout-levels" class="hidden text-sm hover:opacity-80" style="color: var(--comment)">退出</a>
+          <a href="login.html" id="nav-login-levels" class="text-sm" style="color: var(--comment)">登录</a>
+          <a href="register.html" id="nav-register-levels" class="text-sm px-2 py-1 rounded" style="background: var(--primary); color: white">注册</a>
+        </div>
+        <div class="relative">
+          <button onclick="toggleThemeMenu()" class="flex items-center gap-2 px-3 py-1.5 surface rounded-lg hover:opacity-80 transition-opacity" style="color: var(--comment)">
+            <i data-lucide="palette" class="w-5 h-5"></i>
+            <span class="text-sm" id="current-theme-name">🌙 极夜黑</span>
+          </button>
+        <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 surface rounded-lg shadow-xl border z-50" style="border-color: var(--border)">
+          <div class="p-2">
+            <button onclick="setTheme('dark')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+              <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #1a1a2e, #5865f2)"></div>
+              <span style="color: var(--text)">🌙 极夜黑</span>
+            </button>
+            <button onclick="setTheme('duolingo')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+              <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #88c999, #b8e6b8)"></div>
+              <span style="color: var(--text)">🌿 护眼绿</span>
+            </button>
+            <button onclick="setTheme('python')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+              <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #3776ab, #ffd343)"></div>
+              <span style="color: var(--text)">🐍 科技蓝</span>
+            </button>
+            <button onclick="setTheme('github')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+              <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #0d1117, #30363d)"></div>
+              <span style="color: var(--text)">💻 代码灰</span>
+            </button>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--text)">🗺️ Python 王国冒险地图</h1>
+      <p style="color: var(--comment)">完成 30 个挑战，解开三个封印，成为 Python 大师！</p>
+    </div>
+    
+    <!-- 进度总览 -->
+    <div class="surface rounded-xl p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold" style="color: var(--text)">📊 总体进度</h2>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="award" class="w-5 h-5" style="color: #ffd700"></i>
+            <span style="color: var(--text)">总 XP: <span id="total-xp" style="color: var(--primary)">0</span></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="circle-check" class="w-5 h-5" style="color: var(--success, #4caf50)"></i>
+            <span style="color: var(--text)">已完成：<span id="completed-count">0</span>/30</span>
+          </div>
+        </div>
+      </div>
+      <div class="h-4 rounded-full overflow-hidden" style="background: var(--border)">
+        <div id="total-progress" class="h-full progress-bar" style="width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary))"></div>
+      </div>
+    </div>
+
+    <!-- 第 1 关 -->
+    <section class="surface rounded-xl p-6 mb-8 border-2" style="border-color: var(--primary)">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="w-20 h-20 rounded-xl flex items-center justify-center text-4xl flex-shrink-0" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+          🏰
+        </div>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold mb-2" style="color: var(--text)">第 1 关：魔法学院入学</h2>
+          <p class="mb-4" style="color: var(--comment)">
+            你来到了 Python 王国的魔法学院。院长告诉你："想要成为 Python 大师，首先要学会创造变量的魔法。"
+            完成 10 个入学测试，证明你有资格进入学院！
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="flex-1">
+              <div class="h-3 rounded-full overflow-hidden mb-2" style="background: var(--border)">
+                <div id="level1-progress" class="h-full progress-bar" style="width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary))"></div>
+              </div>
+              <p class="text-sm font-mono" style="color: var(--comment)"><span id="level1-count">0</span>/10 已完成</p>
+            </div>
+            <div class="text-right">
+              <p class="text-2xl font-bold" style="color: var(--primary)"><span id="level1-xp">0</span> XP</p>
+              <p class="text-xs" style="color: var(--comment)">可获得 125 XP</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 题目列表 -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" id="level1-questions"></div>
+    </section>
+
+    <!-- 第 2 关 - 锁定 -->
+    <section class="surface rounded-xl p-6 mb-8 border opacity-60">
+      <div class="flex items-center gap-4">
+        <div class="w-20 h-20 rounded-xl flex items-center justify-center text-4xl" style="background: var(--border)">
+          🌀
+        </div>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold mb-2" style="color: var(--text)">第 2 关：神秘迷宫探险</h2>
+          <p style="color: var(--comment)">条件判断、循环语句（完成第 1 关解锁）</p>
+        </div>
+        <div class="ml-auto">
+          <i data-lucide="lock" class="w-8 h-8" style="color: var(--comment)"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第 3 关 - 锁定 -->
+    <section class="surface rounded-xl p-6 mb-8 border opacity-60">
+      <div class="flex items-center gap-4">
+        <div class="w-20 h-20 rounded-xl flex items-center justify-center text-4xl" style="background: var(--border)">
+          ⚔️
+        </div>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold mb-2" style="color: var(--text)">第 3 关：决战黑暗法师</h2>
+          <p style="color: var(--comment)">函数定义、参数、返回值（完成第 2 关解锁）</p>
+        </div>
+        <div class="ml-auto">
+          <i data-lucide="lock" class="w-8 h-8" style="color: var(--comment)"></i>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 主题配置
+    const themes = {
+      dark: { name: '🌙 极夜黑', primary: '#5865f2', secondary: '#eb459e' },
+      duolingo: { name: '🌿 护眼绿', primary: '#88c999', secondary: '#b8e6b8' },
+      python: { name: '🐍 科技蓝', primary: '#3776ab', secondary: '#ffd343' },
+      github: { name: '💻 代码灰', primary: '#3776ab', secondary: '#ffd343' }
+    };
+    
+    let questionsData = {};
+    
+    // 主题切换
+    function toggleThemeMenu() {
+      document.getElementById('theme-menu').classList.toggle('hidden');
+    }
+    
+    function setTheme(themeId) {
+      document.documentElement.setAttribute('data-theme', themeId);
+      localStorage.setItem('codequest_theme', themeId);
+      document.getElementById('theme-menu').classList.add('hidden');
+      document.getElementById('current-theme-name').textContent = themes[themeId].name;
+    }
+    
+    // 点击外部关闭菜单
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('theme-menu');
+      if (!e.target.closest('.relative') && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
+    
+    // 加载题目数据
+    async function loadQuestions() {
+      try {
+        const response = await fetch('content/questions.json');
+        questionsData = await response.json();
+        renderLevel1(questionsData.levels[0]);
+        updateProgress();
+      } catch (error) {
+        console.error('加载失败:', error);
+      }
+    }
+    
+    // 渲染第 1 关题目
+    function renderLevel1(level) {
+      const container = document.getElementById('level1-questions');
+      const progress = JSON.parse(localStorage.getItem('codequest_progress') || '{}');
+      
+      container.innerHTML = level.questions.map((q, index) => {
+        const completed = progress[q.id]?.completed || false;
+        const difficultyColors = {
+          easy: 'rgba(76, 175, 80, 0.2)',
+          medium: 'rgba(255, 193, 7, 0.2)',
+          hard: 'rgba(244, 67, 54, 0.2)'
+        };
+        const difficultyText = {
+          easy: '#4caf50',
+          medium: '#ffc107',
+          hard: '#f44336'
+        };
+        
+        return `
+          <a href="question.html?id=${q.id}" class="level-card surface rounded-lg p-4 border cursor-pointer" style="border-color: ${completed ? 'var(--primary)' : 'var(--border)'}; opacity: ${completed ? '1' : '0.8'}">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono" style="color: var(--comment)">#${(index + 1).toString().padStart(2, '0')}</span>
+              <span class="text-xs px-2 py-0.5 rounded" style="background: ${difficultyColors[q.difficulty]}; color: ${difficultyText[q.difficulty]}">${q.difficulty}</span>
+            </div>
+            <h3 class="font-medium mb-1" style="color: var(--text)">${q.title}</h3>
+            <p class="text-xs mb-2" style="color: var(--comment)">${q.story ? q.story.substring(0, 50) + '...' : q.content.substring(0, 50) + '...'}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1 text-xs" style="color: var(--comment)">
+                <i data-lucide="award" class="w-3 h-3"></i>
+                <span>+${q.points} XP</span>
+              </div>
+              ${completed ? '<i data-lucide="circle-check" class="w-4 h-4" style="color: var(--primary)"></i>' : ''}
+            </div>
+          </a>
+        `;
+      }).join('');
+      
+      lucide.createIcons();
+    }
+    
+    // 更新进度
+    function updateProgress() {
+      const progress = JSON.parse(localStorage.getItem('codequest_progress') || '{}');
+      const completed = Object.keys(progress).filter(id => progress[id].completed).length;
+      const totalXP = completed * 10;
+      const percentage = (completed / 30) * 100;
+      
+      // 总进度
+      document.getElementById('total-xp').textContent = totalXP;
+      document.getElementById('completed-count').textContent = completed;
+      document.getElementById('total-progress').style.width = percentage + '%';
+      
+      // 第 1 关进度
+      const level1Completed = Object.keys(progress).filter(id => parseInt(id) <= 10 && progress[id].completed).length;
+      document.getElementById('level1-count').textContent = level1Completed;
+      document.getElementById('level1-progress').style.width = (level1Completed / 10 * 100) + '%';
+      document.getElementById('level1-xp').textContent = level1Completed * 10;
+    }
+    
+    // 加载主题
+    const savedTheme = localStorage.getItem('codequest_theme') || 'dark';
+    setTheme(savedTheme);
+    
+    // 导航栏用户信息
+    (function initNavUser() {
+      try {
+        const userStr = localStorage.getItem('codequest_user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        const nameEl = document.getElementById('nav-user-name-levels');
+        const logoutEl = document.getElementById('nav-logout-levels');
+        const loginEl = document.getElementById('nav-login-levels');
+        const registerEl = document.getElementById('nav-register-levels');
+        if (user && (user.qq || user.email)) {
+          if (nameEl) { nameEl.textContent = user.name || user.qq || user.email || '用户'; nameEl.classList.remove('hidden'); }
+          if (logoutEl) { logoutEl.classList.remove('hidden'); logoutEl.onclick = function(e) { e.preventDefault(); localStorage.removeItem('codequest_token'); localStorage.removeItem('codequest_user'); window.location.href = 'login.html'; }; }
+          if (loginEl) loginEl.classList.add('hidden');
+          if (registerEl) registerEl.classList.add('hidden');
+        } else {
+          if (nameEl) nameEl.classList.add('hidden');
+          if (logoutEl) logoutEl.classList.add('hidden');
+        }
+      } catch (e) {}
+    })();
+    
+    // 初始化
+    loadQuestions();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

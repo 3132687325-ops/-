@@ -1,0 +1,445 @@
+{
+  "meta": {
+    "subject": "Python 编程",
+    "theme": "Python 王国冒险记",
+    "target": "大学生初学者",
+    "totalQuestions": 30,
+    "totalLevels": 3,
+    "version": "2.0-story",
+    "createdAt": "2026-03-14",
+    "competitor": "Duolingo-inspired"
+  },
+  "story": {
+    "premise": "你是一名初出茅庐的 coder，意外进入了神秘的 Python 王国。王国被三个魔法封印锁住，你需要完成 30 个挑战，解开所有封印，成为 Python 大师！",
+    "protagonist": {
+      "name": "Python 学徒",
+      "goal": "解开三个封印，成为 Python 大师",
+      "enemy": "黑暗法师 Bug"
+    }
+  },
+  "levels": [
+    {
+      "level": 1,
+      "title": "🏰 魔法学院入学",
+      "description": "在魔法学院学习基础咒语（变量），通过入学测试",
+      "story": "你来到了 Python 王国的魔法学院门口。院长告诉你：'想要成为 Python 大师，首先要学会创造变量的魔法。变量就像魔法容器，可以存储各种数据。' 你需要完成 10 个入学测试，证明你有资格进入学院。",
+      "setting": "魔法学院",
+      "mentor": "白胡子院长",
+      "questions": [
+        {
+          "id": 1,
+          "title": "🧙 创造魔法容器",
+          "story": "院长说：'首先，创造一个名为 name 的魔法容器，里面存放你的名字（拼音）。这就是变量！'",
+          "content": "创建一个变量 name，值为你的名字（拼音）",
+          "answer": "name = 'zhangsan'",
+          "explanation": "Python 变量不需要声明类型，直接赋值即可。字符串用单引号或双引号包裹。",
+          "difficulty": "easy",
+          "knowledge": ["变量", "字符串"],
+          "points": 10,
+          "hint": "格式：变量名 = '值'"
+        },
+        {
+          "id": 2,
+          "title": "🔢 年龄魔法",
+          "story": "院长继续说：'现在创造一个名为 age 的容器，存放你的年龄。数字不需要引号！'",
+          "content": "创建一个变量 age，值为你的年龄",
+          "answer": "age = 20",
+          "explanation": "整数类型（int）直接赋值，不需要引号。",
+          "difficulty": "easy",
+          "knowledge": ["变量", "整数"],
+          "points": 10,
+          "hint": "数字类型不需要引号"
+        },
+        {
+          "id": 3,
+          "title": "📏 身高魔法",
+          "story": "'很好！再来，创造 height 变量存放你的身高（米），比如 1.75'",
+          "content": "创建一个变量 height，值为你的身高（米）",
+          "answer": "height = 1.75",
+          "explanation": "浮点数（float）用于表示小数，直接用数字加点表示。",
+          "difficulty": "easy",
+          "knowledge": ["变量", "浮点数"],
+          "points": 10,
+          "hint": "小数就是浮点数"
+        },
+        {
+          "id": 4,
+          "title": "➕ 加法咒语",
+          "story": "院长拿出两个魔法球：'用 + 号把 10 和 20 加起来，结果存入 result！'",
+          "content": "计算 10 + 20 的结果，存入变量 result",
+          "answer": "result = 10 + 20",
+          "explanation": "Python 使用 + 进行加法运算，结果可以直接赋值给变量。",
+          "difficulty": "easy",
+          "knowledge": ["运算符", "加法"],
+          "points": 10,
+          "hint": "使用 + 运算符"
+        },
+        {
+          "id": 5,
+          "title": "✖️ 乘法咒语",
+          "story": "'干得不错！现在用 * 号计算 5 乘以 6，存入 product！'",
+          "content": "计算 5 * 6 的结果，存入变量 product",
+          "answer": "product = 5 * 6",
+          "explanation": "Python 使用 * 进行乘法运算。",
+          "difficulty": "easy",
+          "knowledge": ["运算符", "乘法"],
+          "points": 10,
+          "hint": "乘法用 * 不是 x"
+        },
+        {
+          "id": 6,
+          "title": "🔗 字符串连接术",
+          "story": "院长念出咒语：'用 + 号把两个字符串连起来！Hello 和 World 要变成一句话！'",
+          "content": "将两个字符串 'Hello' 和 'World' 拼接，存入变量 greeting",
+          "answer": "greeting = 'Hello' + 'World'",
+          "explanation": "字符串使用 + 进行拼接，结果是一个新字符串。",
+          "difficulty": "easy",
+          "knowledge": ["字符串", "拼接"],
+          "points": 10,
+          "hint": "字符串也能用 + 连接"
+        },
+        {
+          "id": 7,
+          "title": "📢 让程序说话",
+          "story": "'最后，用 print() 咒语让程序输出 'Hello Python'！'",
+          "content": "使用 print 函数输出字符串 'Hello Python'",
+          "answer": "print('Hello Python')",
+          "explanation": "print() 是 Python 的内置函数，用于输出内容到控制台。",
+          "difficulty": "easy",
+          "knowledge": ["print", "输出"],
+          "points": 10,
+          "hint": "print() 是输出函数"
+        },
+        {
+          "id": 8,
+          "title": "🔄 变形术：数字变文字",
+          "story": "院长展示高级魔法：'把数字 100 变成字符串！用 str() 咒语！'",
+          "content": "将整数 100 转换为字符串，存入变量 s",
+          "answer": "s = str(100)",
+          "explanation": "str() 函数可以将其他类型转换为字符串类型。",
+          "difficulty": "medium",
+          "knowledge": ["类型转换", "str"],
+          "points": 15,
+          "hint": "str() 是类型转换函数"
+        },
+        {
+          "id": 9,
+          "title": "🔄 变形术：文字变数字",
+          "story": "'反过来！把字符串 '2024' 变成整数，用 int() 咒语！'",
+          "content": "将字符串 '2024' 转换为整数，存入变量 year",
+          "answer": "year = int('2024')",
+          "explanation": "int() 函数可以将数字字符串转换为整数。",
+          "difficulty": "medium",
+          "knowledge": ["类型转换", "int"],
+          "points": 15,
+          "hint": "int() 转整数"
+        },
+        {
+          "id": 10,
+          "title": "⭕ 计算圆的面积",
+          "story": "院长画出圆圈：'半径 radius=5，计算圆面积！公式是 π*r²，π取 3.14'",
+          "content": "已知半径 radius = 5，计算圆的面积（π*r²），存入变量 area（π取 3.14）",
+          "answer": "area = 3.14 * radius * radius",
+          "explanation": "圆的面积公式是 π*r²，Python 中用 * 表示乘法，**表示幂运算。",
+          "difficulty": "medium",
+          "knowledge": ["运算符", "数学计算"],
+          "points": 15,
+          "hint": "面积 = π * r * r"
+        }
+      ],
+      "completion": {
+        "message": "🎉 恭喜你！通过了入学测试！院长授予你'Python 学徒'称号，并告诉你：'前方是神秘的迷宫，那里有第二个封印...'",
+        "reward": "🏆 Python 学徒徽章",
+        "unlock": "level_2"
+      }
+    },
+    {
+      "level": 2,
+      "title": "🌀 神秘迷宫探险",
+      "description": "进入神秘迷宫，用条件判断选择路径，用循环找到出口",
+      "story": "你来到了被诅咒的迷宫。迷宫里有很多岔路，你需要用 if 判断选择正确的路径，用 for/while 循环找到出口。小心！黑暗法师 Bug 在迷宫里设置了陷阱！",
+      "setting": "神秘迷宫",
+      "mentor": "迷宫向导精灵",
+      "questions": [
+        {
+          "id": 11,
+          "title": "🚦 岔路选择",
+          "story": "精灵说：'用 if 判断！如果 score 大于等于 60，打印'及格'，才能继续前进！'",
+          "content": "判断变量 score 是否大于等于 60，如果是，打印 '及格'",
+          "answer": "if score >= 60:\n    print('及格')",
+          "explanation": "if 语句用于条件判断，>= 表示大于等于，注意冒号和缩进。",
+          "difficulty": "medium",
+          "knowledge": ["if", "条件判断"],
+          "points": 15,
+          "hint": "if 条件：后面要缩进"
+        },
+        {
+          "id": 12,
+          "title": "🚪 两扇门",
+          "story": "'前面有两扇门！用 if-else 判断：如果 age>=18 走左门（打印'成年'），否则走右门（打印'未成年'）'",
+          "content": "判断变量 age 是否大于等于 18，如果是打印'成年'，否则打印'未成年'",
+          "answer": "if age >= 18:\n    print('成年')\nelse:\n    print('未成年')",
+          "explanation": "if-else 结构用于二选一的情况，else 不需要条件。",
+          "difficulty": "medium",
+          "knowledge": ["if-else", "条件判断"],
+          "points": 15,
+          "hint": "else 不需要条件"
+        },
+        {
+          "id": 13,
+          "title": "🔢 数楼梯",
+          "story": "'迷宫有 5 层楼梯！用 for 循环从 1 数到 5！'",
+          "content": "使用 for 循环打印数字 1 到 5",
+          "answer": "for i in range(1, 6):\n    print(i)",
+          "explanation": "range(1, 6) 生成 1 到 5 的序列（不包含 6），for 循环遍历序列。",
+          "difficulty": "medium",
+          "knowledge": ["for", "循环", "range"],
+          "points": 15,
+          "hint": "range(1,6) 不包含 6"
+        },
+        {
+          "id": 14,
+          "title": "💰 收集金币",
+          "story": "'地上有金币！用 for 循环把 1 到 10 的金币都加起来，存入 total！'",
+          "content": "使用 for 循环计算 1 到 10 的和，存入变量 total",
+          "answer": "total = 0\nfor i in range(1, 11):\n    total += i",
+          "explanation": "累加需要先初始化变量为 0，然后在循环中用 += 累加。",
+          "difficulty": "medium",
+          "knowledge": ["for", "循环", "累加"],
+          "points": 15,
+          "hint": "先 total=0，再累加"
+        },
+        {
+          "id": 15,
+          "title": "⏰ 倒计时逃脱",
+          "story": "'陷阱启动了！用 while 循环从 5 倒数到 1 逃脱！'",
+          "content": "使用 while 循环打印数字 5 到 1",
+          "answer": "i = 5\nwhile i >= 1:\n    print(i)\n    i -= 1",
+          "explanation": "while 循环需要手动控制循环变量，否则会无限循环。",
+          "difficulty": "medium",
+          "knowledge": ["while", "循环"],
+          "points": 15,
+          "hint": "记得 i -= 1 否则死循环"
+        },
+        {
+          "id": 16,
+          "title": "🎒 魔法背包",
+          "story": "'创建一个魔法背包（列表），放入三样物品：'apple', 'banana', 'orange'！'",
+          "content": "创建一个包含 3 个元素的列表 fruits，包含'apple', 'banana', 'orange'",
+          "answer": "fruits = ['apple', 'banana', 'orange']",
+          "explanation": "列表用方括号 [] 表示，元素用逗号分隔。",
+          "difficulty": "medium",
+          "knowledge": ["列表", "数据结构"],
+          "points": 15,
+          "hint": "列表用 [] 方括号"
+        },
+        {
+          "id": 17,
+          "title": "🔍 检查背包",
+          "story": "'用 for 循环看看背包里有什么！打印每个物品！'",
+          "content": "遍历列表 fruits，打印每个元素",
+          "answer": "for fruit in fruits:\n    print(fruit)",
+          "explanation": "for 循环可以直接遍历列表，每次迭代获取一个元素。",
+          "difficulty": "medium",
+          "knowledge": ["列表", "for", "遍历"],
+          "points": 15,
+          "hint": "for 变量 in 列表:"
+        },
+        {
+          "id": 18,
+          "title": "➕ 添加魔法药水",
+          "content": "向列表 fruits 添加一个新元素'grape'",
+          "answer": "fruits.append('grape')",
+          "explanation": "append() 方法可以向列表末尾添加一个元素。",
+          "difficulty": "medium",
+          "knowledge": ["列表", "append"],
+          "points": 15,
+          "hint": "append() 添加到末尾"
+        },
+        {
+          "id": 19,
+          "title": "📊 背包里有多少东西",
+          "content": "获取列表 fruits 的长度，存入变量 length",
+          "answer": "length = len(fruits)",
+          "explanation": "len() 函数可以获取列表、字符串等序列的长度。",
+          "difficulty": "easy",
+          "knowledge": ["列表", "len"],
+          "points": 10,
+          "hint": "len() 获取长度"
+        },
+        {
+          "id": 20,
+          "title": "✂️ 取出前两样物品",
+          "content": "获取列表 fruits 的前两个元素，存入变量 first_two",
+          "answer": "first_two = fruits[:2]",
+          "explanation": "切片操作 [start:end] 可以获取子列表，不包含 end 位置。",
+          "difficulty": "medium",
+          "knowledge": ["列表", "切片"],
+          "points": 15,
+          "hint": "切片 [:2] 不包含索引 2"
+        }
+      ],
+      "completion": {
+        "message": "🎉 太棒了！你走出了迷宫！第二个封印解开了！精灵告诉你：'最后一个封印在黑暗法师的塔里，你需要学习函数魔法才能击败他！'",
+        "reward": "🏆 迷宫征服者徽章",
+        "unlock": "level_3"
+      }
+    },
+    {
+      "level": 3,
+      "title": "⚔️ 决战黑暗法师",
+      "description": "学习终极魔法（函数），用模块召唤神器，击败黑暗法师 Bug",
+      "story": "你来到了黑暗法师 Bug 的高塔。要击败他，你需要学习最强大的魔法——函数！函数是可以重复使用的咒语。还要召唤 math 模块的神器。准备好最终决战了吗？",
+      "setting": "黑暗高塔",
+      "mentor": "光明法师",
+      "questions": [
+        {
+          "id": 21,
+          "title": "🧙 创造咒语",
+          "story": "光明法师说：'创建一个 greet 函数，打印'Hello'！这是最基础的函数魔法！'",
+          "content": "定义一个函数 greet，打印'Hello'",
+          "answer": "def greet():\n    print('Hello')",
+          "explanation": "def 关键字用于定义函数，函数名后跟括号和冒号，函数体需要缩进。",
+          "difficulty": "medium",
+          "knowledge": ["函数", "def"],
+          "points": 15,
+          "hint": "def 函数名 ():"
+        },
+        {
+          "id": 22,
+          "title": "📯 带参数的咒语",
+          "story": "'高级函数可以接收参数！创建 greet_name 函数，接收 name 参数，打印'Hello, {name}'！'",
+          "content": "定义一个函数 greet_name，接收参数 name，打印'Hello, {name}'",
+          "answer": "def greet_name(name):\n    print(f'Hello, {name}')",
+          "explanation": "函数可以接收参数，f-string 可以在字符串中嵌入变量。",
+          "difficulty": "medium",
+          "knowledge": ["函数", "参数", "f-string"],
+          "points": 15,
+          "hint": "f'Hello, {name}' 是 f-string"
+        },
+        {
+          "id": 23,
+          "title": "✨ 返回魔法结果",
+          "story": "'最强大的函数会返回结果！创建 add 函数，接收 a 和 b，返回它们的和！'",
+          "content": "定义一个函数 add，接收两个参数 a 和 b，返回它们的和",
+          "answer": "def add(a, b):\n    return a + b",
+          "explanation": "return 语句用于返回函数的结果。",
+          "difficulty": "medium",
+          "knowledge": ["函数", "return"],
+          "points": 15,
+          "hint": "return 返回值"
+        },
+        {
+          "id": 24,
+          "title": "🔮 召唤函数",
+          "story": "'现在调用 add 函数！传入 5 和 3，结果存入 result！'",
+          "content": "调用函数 add(5, 3)，将结果存入变量 result",
+          "answer": "result = add(5, 3)",
+          "explanation": "调用函数时使用函数名加括号，括号内传入参数。",
+          "difficulty": "easy",
+          "knowledge": ["函数", "调用"],
+          "points": 10,
+          "hint": "函数名 (参数)"
+        },
+        {
+          "id": 25,
+          "title": "📦 召唤数学神器",
+          "story": "'要击败黑暗法师，需要 math 模块的神器！导入 math 模块！'",
+          "content": "导入 math 模块",
+          "answer": "import math",
+          "explanation": "import 语句用于导入模块，模块包含预定义的函数和变量。",
+          "difficulty": "easy",
+          "knowledge": ["模块", "import"],
+          "points": 10,
+          "hint": "import 模块名"
+        },
+        {
+          "id": 26,
+          "title": "⚡ 使用神器力量",
+          "story": "'用 math.sqrt() 计算 16 的平方根！这是击败黑暗法师的关键！'",
+          "content": "使用 math 模块计算 16 的平方根，存入变量 result",
+          "answer": "result = math.sqrt(16)",
+          "explanation": "模块函数使用 模块名。函数名 的方式调用。",
+          "difficulty": "medium",
+          "knowledge": ["模块", "math", "sqrt"],
+          "points": 15,
+          "hint": "math.sqrt() 开平方"
+        },
+        {
+          "id": 27,
+          "title": "📜 魔法卷轴（字典）",
+          "story": "'创建一个魔法卷轴（字典），记录学生信息：name 是'小明'，age 是 20！'",
+          "content": "创建一个字典 student，包含 name:'小明' 和 age:20",
+          "answer": "student = {'name': '小明', 'age': 20}",
+          "explanation": "字典用花括号 {} 表示，键值对用冒号分隔，多个键值对用逗号分隔。",
+          "difficulty": "medium",
+          "knowledge": ["字典", "数据结构"],
+          "points": 15,
+          "hint": "字典用 {} 花括号"
+        },
+        {
+          "id": 28,
+          "title": "📖 读取卷轴内容",
+          "story": "'从 student 卷轴中读取 name 的值！'",
+          "content": "从字典 student 中获取 name 的值，存入变量 name",
+          "answer": "name = student['name']",
+          "explanation": "字典使用 字典名 ['键'] 的方式访问值。",
+          "difficulty": "easy",
+          "knowledge": ["字典", "访问"],
+          "points": 10,
+          "hint": "字典 ['键']"
+        },
+        {
+          "id": 29,
+          "title": "🔍 阅读整个卷轴",
+          "story": "'遍历 student 卷轴的所有内容！打印每个键值对！'",
+          "content": "遍历字典 student 的所有键值对",
+          "answer": "for key, value in student.items():\n    print(key, value)",
+          "explanation": "items() 方法返回字典的所有键值对，可以用 for 循环遍历。",
+          "difficulty": "hard",
+          "knowledge": ["字典", "遍历", "items"],
+          "points": 20,
+          "hint": "字典.items() 返回键值对"
+        },
+        {
+          "id": 30,
+          "title": "⚔️ 终极决战",
+          "story": "黑暗法师出现了！'创建 calculate 函数，根据 operation 符号（+ - * /）计算结果！这是最终考验！'",
+          "content": "定义一个函数 calculate，接收三个参数 a、b 和 operation，根据 operation 的值返回 a+b、a-b、a*b 或 a/b",
+          "answer": "def calculate(a, b, operation):\n    if operation == '+':\n        return a + b\n    elif operation == '-':\n        return a - b\n    elif operation == '*':\n        return a * b\n    elif operation == '/':\n        return a / b",
+          "explanation": "综合练习：结合函数、参数、返回值、if-elif-else 条件判断。",
+          "difficulty": "hard",
+          "knowledge": ["函数", "条件判断", "综合"],
+          "points": 20,
+          "hint": "用 if-elif 判断 operation"
+        }
+      ],
+      "completion": {
+        "message": "🎉🎉🎉 恭喜你！黑暗法师 Bug 被击败了！三个封印全部解开！你成为了 Python 大师！王国恢复了和平，你的名字将被永远铭记！🏆",
+        "reward": "👑 Python 大师王冠",
+        "unlock": "champion"
+      }
+    }
+  ],
+  "achievements": [
+    {"id": "first_code", "name": "第一行代码", "description": "完成第 1 题", "icon": "💻", "xp": 10},
+    {"id": "level1_complete", "name": "魔法学院入学", "description": "完成第 1 关所有题目", "icon": "🏰", "xp": 150},
+    {"id": "level2_complete", "name": "迷宫征服者", "description": "完成第 2 关所有题目", "icon": "🌀", "xp": 150},
+    {"id": "level3_complete", "name": "屠龙勇士", "description": "完成第 3 关所有题目", "icon": "⚔️", "xp": 200},
+    {"id": "all_complete", "name": "Python 大师", "description": "完成所有 30 题", "icon": "👑", "xp": 500},
+    {"id": "streak_3", "name": "初出茅庐", "description": "连续学习 3 天", "icon": "🔥", "xp": 50},
+    {"id": "streak_7", "name": "持之以恒", "description": "连续学习 7 天", "icon": "🔥🔥", "xp": 150},
+    {"id": "streak_30", "name": "传奇学徒", "description": "连续学习 30 天", "icon": "🔥🔥🔥", "xp": 500}
+  ],
+  "scoring": {
+    "easy": 10,
+    "medium": 15,
+    "hard": 20
+  },
+  "themes": [
+    {"id": "duolingo", "name": "多邻国", "primary": "#58cc02", "secondary": "#2b70c9", "bg": "#ffffff"},
+    {"id": "github", "name": "GitHub", "primary": "#3776ab", "secondary": "#ffd343", "bg": "#0d1117"},
+    {"id": "python", "name": "Python", "primary": "#3776ab", "secondary": "#ffd343", "bg": "#1e4a6b"},
+    {"id": "dark", "name": "深色模式", "primary": "#5865f2", "secondary": "#eb459e", "bg": "#1a1a2e"}
+  ]
+}

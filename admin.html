@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员后台 - CodeQuest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --comment: #94a3b8;
+    }
+    [data-theme="dark"] {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --comment: #94a3b8;
+    }
+    body { background: var(--bg); color: var(--text); }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .input-field { transition: all 0.2s; }
+    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- 导航栏 -->
+  <nav class="surface border-b" style="border-color: var(--border)">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-2xl" style="background: linear-gradient(135deg, #ff6b35, #f7c531)">
+          🔥🔨
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">CodeQuest</h1>
+          <p class="text-xs" style="color: var(--comment)">管理员后台</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-sm font-semibold" id="user-email"></p>
+          <p class="text-xs" style="color: var(--comment)" id="user-role"></p>
+        </div>
+        <button onclick="logout()" class="px-4 py-2 rounded-lg text-sm font-medium transition-all" style="background: var(--surface); color: var(--comment); border: 1px solid var(--border)">
+          退出登录
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主要内容 -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="surface rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium" style="color: var(--comment)">我的角色</h3>
+          <i data-lucide="crown" class="w-5 h-5" style="color: var(--primary)"></i>
+        </div>
+        <p class="text-2xl font-bold" id="role-display">-</p>
+      </div>
+      
+      <div class="surface rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium" style="color: var(--comment)">我的邀请码</h3>
+          <i data-lucide="ticket" class="w-5 h-5" style="color: var(--secondary)"></i>
+        </div>
+        <p class="text-lg font-mono font-bold" id="my-invite-code">-</p>
+      </div>
+      
+      <div class="surface rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium" style="color: var(--comment)">下级用户数</h3>
+          <i data-lucide="users" class="w-5 h-5" style="color: var(--primary)"></i>
+        </div>
+        <p class="text-2xl font-bold" id="downline-count">-</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 创建邀请码 -->
+      <div class="surface rounded-xl p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          创建邀请码
+        </h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2" style="color: var(--comment)">
+              最大使用次数
+            </label>
+            <input 
+              type="number" 
+              id="max-uses"
+              class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none"
+              style="border-color: var(--border); color: var(--text)"
+              placeholder="-1 表示无限制"
+              value="-1"
+            />
+            <p class="text-xs mt-1" style="color: var(--comment)">💡 -1 表示无限制使用次数</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2" style="color: var(--comment)">
+              过期天数
+            </label>
+            <input 
+              type="number" 
+              id="expires-days"
+              class="input-field w-full px-4 py-3 rounded-lg surface border focus:outline-none"
+              style="border-color: var(--border); color: var(--text)"
+              placeholder="-1 表示永不过期"
+              value="-1"
+            />
+            <p class="text-xs mt-1" style="color: var(--comment)">💡 -1 表示永不过期</p>
+          </div>
+          
+          <button 
+            onclick="createInviteCode()"
+            class="w-full py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90"
+            style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white"
+          >
+            <i data-lucide="plus" class="w-5 h-5 inline mr-2"></i>
+            创建邀请码
+          </button>
+          
+          <div id="new-invite-code" class="hidden mt-4 p-4 rounded-lg surface border-2" style="border-color: var(--primary)">
+            <p class="text-sm mb-2" style="color: var(--comment)">新邀请码已创建：</p>
+            <p class="text-2xl font-mono font-bold text-center" id="new-code-display" style="color: var(--primary)"></p>
+            <button onclick="copyInviteCode()" class="w-full mt-3 py-2 px-4 rounded-lg text-sm font-medium transition-all" style="background: var(--surface); color: var(--text); border: 1px solid var(--border)">
+              <i data-lucide="copy" class="w-4 h-4 inline mr-1"></i>
+              复制邀请码
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 我的邀请码 -->
+      <div class="surface rounded-xl p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="ticket" class="w-5 h-5"></i>
+          我的专属邀请码
+        </h2>
+        
+        <div class="space-y-4">
+          <div class="p-4 rounded-lg surface border" style="border-color: var(--border)">
+            <p class="text-sm mb-2" style="color: var(--comment)">你的专属邀请码：</p>
+            <p class="text-2xl font-mono font-bold text-center" id="personal-invite-code" style="color: var(--secondary)"></p>
+            <p class="text-xs mt-2 text-center" style="color: var(--comment)">
+              💡 分享此邀请码给他人，他们注册后将成为你的下级
+            </p>
+          </div>
+          
+          <div class="p-4 rounded-lg surface border" style="border-color: var(--border)">
+            <h3 class="text-sm font-medium mb-2" style="color: var(--comment)">邀请规则：</h3>
+            <ul class="text-sm space-y-1" style="color: var(--comment)">
+              <li>• 超级管理员的邀请码 → 注册者为高级用户</li>
+              <li>• 高级用户的邀请码 → 注册者为普通用户</li>
+              <li>• 普通用户无邀请权限</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下级用户列表 -->
+    <div class="surface rounded-xl p-6 mt-6">
+      <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        我的下级用户
+      </h2>
+      
+      <div id="downline-list" class="space-y-3">
+        <p class="text-center py-8" style="color: var(--comment)">加载中...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+    let currentUser = null;
+    let newInviteCode = '';
+    
+    // 检查登录状态
+    async function checkAuth() {
+      const token = localStorage.getItem('codequest_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await res.json();
+        
+        if (!data.success) {
+          localStorage.removeItem('codequest_token');
+          window.location.href = 'login.html';
+          return;
+        }
+        
+        currentUser = data.user;
+        
+        // 检查权限
+        if (currentUser.role !== 'super_admin' && currentUser.role !== 'admin') {
+          alert('权限不足：只有管理员可以访问此页面');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // 显示用户信息
+        document.getElementById('user-email').textContent = currentUser.email || currentUser.qq;
+        document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? '👑 超级管理员' : '👤 高级用户';
+        document.getElementById('role-display').textContent = currentUser.role === 'super_admin' ? '超级管理员' : '高级用户';
+        document.getElementById('my-invite-code').textContent = currentUser.invite_code || '无';
+        document.getElementById('personal-invite-code').textContent = currentUser.invite_code || '无';
+        
+        // 加载下级用户
+        loadDownline();
+        
+      } catch (error) {
+        console.error('认证失败:', error);
+        localStorage.removeItem('codequest_token');
+        window.location.href = 'login.html';
+      }
+    }
+    
+    // 加载下级用户
+    async function loadDownline() {
+      try {
+        const token = localStorage.getItem('codequest_token');
+        const res = await fetch(`${API_BASE}/auth/downline`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await res.json();
+        
+        if (!data.success) {
+          document.getElementById('downline-list').innerHTML = '<p class="text-center py-8" style="color: var(--comment)">暂无下级用户</p>';
+          document.getElementById('downline-count').textContent = '0';
+          return;
+        }
+        
+        const downline = data.downline;
+        document.getElementById('downline-count').textContent = downline.length;
+        
+        if (downline.length === 0) {
+          document.getElementById('downline-list').innerHTML = '<p class="text-center py-8" style="color: var(--comment)">暂无下级用户</p>';
+          return;
+        }
+        
+        let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
+        
+        for (const user of downline) {
+          const roleBadge = user.role === 'admin' ? 
+            '<span class="px-2 py-1 rounded text-xs font-medium" style="background: rgba(235, 69, 158, 0.2); color: var(--secondary)">高级用户</span>' :
+            '<span class="px-2 py-1 rounded text-xs font-medium" style="background: rgba(88, 101, 242, 0.2); color: var(--primary)">普通用户</span>';
+          
+          html += `
+            <div class="surface rounded-lg p-4 border" style="border-color: var(--border)">
+              <div class="flex items-center justify-between mb-2">
+                ${roleBadge}
+                <span class="text-xs" style="color: var(--comment)">${new Date(user.created_at).toLocaleDateString('zh-CN')}</span>
+              </div>
+              <p class="font-mono text-sm">${user.email || user.qq}</p>
+              ${user.last_login ? `<p class="text-xs mt-1" style="color: var(--comment)">最后登录：${new Date(user.last_login).toLocaleDateString('zh-CN')}</p>` : ''}
+            </div>
+          `;
+        }
+        
+        html += '</div>';
+        document.getElementById('downline-list').innerHTML = html;
+        
+      } catch (error) {
+        console.error('加载下级用户失败:', error);
+        document.getElementById('downline-list').innerHTML = '<p class="text-center py-8" style="color: var(--comment)">加载失败</p>';
+      }
+    }
+    
+    // 创建邀请码
+    async function createInviteCode() {
+      try {
+        const token = localStorage.getItem('codequest_token');
+        const maxUses = parseInt(document.getElementById('max-uses').value);
+        const expiresDays = parseInt(document.getElementById('expires-days').value);
+        
+        const res = await fetch(`${API_BASE}/auth/invite-codes`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            max_uses: maxUses === -1 ? -1 : maxUses,
+            expires_days: expiresDays === -1 ? null : expiresDays
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (!data.success) {
+          alert('创建失败：' + data.error);
+          return;
+        }
+        
+        newInviteCode = data.code;
+        document.getElementById('new-code-display').textContent = newInviteCode;
+        document.getElementById('new-invite-code').classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('创建邀请码失败:', error);
+        alert('创建失败，请稍后重试');
+      }
+    }
+    
+    // 复制邀请码
+    function copyInviteCode() {
+      navigator.clipboard.writeText(newInviteCode).then(() => {
+        alert('✅ 邀请码已复制到剪贴板');
+      }).catch(() => {
+        alert('❌ 复制失败，请手动复制');
+      });
+    }
+    
+    // 退出登录
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('codequest_token');
+        localStorage.removeItem('codequest_user');
+        window.location.href = 'login.html';
+      }
+    }
+    
+    // 初始化
+    checkAuth();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

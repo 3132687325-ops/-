@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>答题 - CodeQuest</title>
+  
+  <!-- Monaco Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  
+  <style>
+    :root {
+      --primary: #5865f2;
+      --secondary: #eb459e;
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --border: #0f3460;
+      --text: #eaeaea;
+      --comment: #a0a0a0;
+      --success: #3fb950;
+      --error: #f85149;
+    }
+    [data-theme="duolingo"] {
+      --primary: #88c999;
+      --secondary: #b8e6b8;
+      --bg: #f0f8f0;
+      --surface: #e8f4e8;
+      --border: #c9e0c9;
+      --text: #2d3e2d;
+      --comment: #6b7b6b;
+      --success: #4caf50;
+      --error: #f44336;
+    }
+    [data-theme="python"] {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #1e4a6b;
+      --surface: #2b5b84;
+      --border: #3d7a9f;
+      --text: #ffffff;
+      --comment: #b8d4e8;
+      --success: #4caf50;
+      --error: #f44336;
+    }
+    [data-theme="github"] {
+      --primary: #3776ab;
+      --secondary: #ffd343;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --comment: #8b949e;
+      --success: #3fb950;
+      --error: #f85149;
+    }
+    
+    body { background: var(--bg); color: var(--text); transition: all 0.3s ease; }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    
+    /* Monaco Editor 容器 */
+    #monaco-container {
+      height: 400px;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .progress-bar { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    
+    /* 空格键提示动画 */
+    @keyframes pulse-key {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .key-hint {
+      animation: pulse-key 2s infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- 导航栏 -->
+  <nav class="surface border-b">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="levels.html" class="flex items-center gap-2" style="color: var(--comment)">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        <span>返回地图</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <!-- 主题切换 -->
+        <div class="relative">
+          <button onclick="toggleThemeMenu()" class="flex items-center gap-2 px-3 py-1.5 surface rounded-lg hover:opacity-80 transition-opacity" style="color: var(--comment)">
+            <i data-lucide="palette" class="w-5 h-5"></i>
+            <span class="text-sm" id="current-theme-name">🌙 极夜黑</span>
+          </button>
+          <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 surface rounded-lg shadow-xl border z-50" style="border-color: var(--border)">
+            <div class="p-2">
+              <button onclick="setTheme('dark')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #1a1a2e, #5865f2)"></div>
+                <span style="color: var(--text)">🌙 极夜黑</span>
+              </button>
+              <button onclick="setTheme('duolingo')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #88c999, #b8e6b8)"></div>
+                <span style="color: var(--text)">🌿 护眼绿</span>
+              </button>
+              <button onclick="setTheme('python')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #3776ab, #ffd343)"></div>
+                <span style="color: var(--text)">🐍 科技蓝</span>
+              </button>
+              <button onclick="setTheme('github')" class="w-full text-left px-3 py-2 rounded hover:opacity-80 flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: linear-gradient(135deg, #0d1117, #30363d)"></div>
+                <span style="color: var(--text)">💻 代码灰</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- XP 显示 -->
+        <div class="flex items-center gap-2 px-3 py-1.5 surface rounded-lg">
+          <i data-lucide="award" class="w-4 h-4" style="color: #ffd700"></i>
+          <span class="text-sm font-mono" id="xp-display" style="color: var(--text)">+10 XP</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <!-- 题目信息 -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-sm mb-2" style="color: var(--comment)">
+        <span class="px-2 py-0.5 rounded text-xs font-mono" id="question-badge" style="background: rgba(88, 101, 242, 0.2); color: #5865f2">#01</span>
+        <span id="level-info">第 1 关 · 魔法学院入学</span>
+      </div>
+      <h1 class="text-2xl font-bold mb-2" style="color: var(--text)" id="question-title">加载中...</h1>
+      <p class="text-lg mb-4" style="color: var(--text)" id="question-story"></p>
+      <p class="p-4 surface rounded-lg border font-mono text-sm" style="border-color: var(--border); color: var(--comment)" id="question-content"></p>
+    </div>
+
+    <!-- Monaco 代码编辑器 -->
+    <div class="surface rounded-xl border overflow-hidden mb-6">
+      <div class="flex items-center justify-between px-4 py-3 border-b" style="border-color: var(--border)">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-code-2" class="w-4 h-4" style="color: var(--primary)"></i>
+          <span class="text-sm font-mono" style="color: var(--comment)">main.py</span>
+        </div>
+        <button onclick="resetCode()" class="text-xs flex items-center gap-1" style="color: var(--comment)">
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+          重置
+        </button>
+      </div>
+      <div id="monaco-container"></div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="flex items-center gap-3 mb-8">
+      <button onclick="submitCode()" class="flex-1 py-3 px-6 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90" style="background: var(--primary); color: white">
+        <i data-lucide="play" class="w-5 h-5"></i>
+        <span>运行代码</span>
+        <kbd class="px-2 py-0.5 bg-white bg-opacity-20 rounded text-xs font-mono">Shift + Enter</kbd>
+      </button>
+      <button onclick="toggleHint()" class="py-3 px-4 surface rounded-lg font-medium flex items-center gap-2 transition-all hover:opacity-80" style="color: var(--comment)">
+        <i data-lucide="lightbulb" class="w-5 h-5"></i>
+        <span class="hidden sm:inline">提示</span>
+      </button>
+      <button onclick="toggleAnswer()" class="py-3 px-4 surface rounded-lg font-medium flex items-center gap-2 transition-all hover:opacity-80" style="color: var(--primary)">
+        <i data-lucide="eye" class="w-5 h-5"></i>
+        <span class="hidden sm:inline">答案</span>
+      </button>
+    </div>
+    
+    <!-- 正确答案区域 -->
+    <div id="answer-section" class="hidden surface rounded-xl p-6 border mb-8" style="border-color: var(--primary)">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(88, 101, 242, 0.2)">
+          <i data-lucide="circle-check" class="w-5 h-5" style="color: var(--primary)"></i>
+        </div>
+        <h3 class="text-lg font-semibold" style="color: var(--text)">参考答案</h3>
+      </div>
+      <div class="surface rounded-lg p-4 border mb-4" style="border-color: var(--border)">
+        <pre class="font-mono text-sm overflow-x-auto" id="reference-code" style="color: var(--text)"></pre>
+      </div>
+      <div class="flex items-start gap-2 text-sm" style="color: var(--comment)">
+        <i data-lucide="info" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+        <p id="reference-explanation"></p>
+      </div>
+      <p class="text-xs mt-4" style="color: var(--comment)">💡 提示：参考答案仅供参考，编程没有唯一解，尝试写出你自己的风格！</p>
+    </div>
+
+    <!-- 提示区域 -->
+    <div id="hint-section" class="hidden surface rounded-xl p-6 border mb-8" style="border-color: #ffd700">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255, 215, 0, 0.2)">
+          <i data-lucide="lightbulb" class="w-5 h-5" style="color: #ffd700"></i>
+        </div>
+        <h3 class="text-lg font-semibold" style="color: var(--text)">💡 智能提示</h3>
+      </div>
+      <div id="hint-content" style="color: var(--comment)">
+        <p class="mb-3"><strong>用法说明：</strong><span id="hint-usage"></span></p>
+        <div id="hint-error-analysis" class="hidden">
+          <p class="mb-2"><strong>❌ 你的代码问题：</strong></p>
+          <ul id="error-list" class="list-disc list-inside space-y-1"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 成功结果 -->
+    <div id="success-section" class="hidden surface rounded-xl p-6 border mb-8" style="border-color: var(--success)">
+      <div class="flex items-start gap-3 mb-6">
+        <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(63, 185, 80, 0.2)">
+          <i data-lucide="circle-check" class="w-8 h-8" style="color: var(--success)"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-xl font-bold mb-1" style="color: var(--text)">✅ 太棒了！</h3>
+          <p class="mb-3" style="color: var(--comment)">你完成了这个挑战！</p>
+          <div class="flex items-center gap-4">
+            <div>
+              <p class="text-2xl font-bold" style="color: #ffd700">+<span id="xp-gained">10</span> XP</p>
+            </div>
+            <div class="key-hint px-3 py-1.5 surface rounded-lg border" style="border-color: var(--border)">
+              <p class="text-sm" style="color: var(--comment)">按 <kbd class="px-2 py-0.5 bg-opacity-20 rounded text-xs font-mono" style="background: var(--primary); color: white">空格键</kbd> 进入下一关</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <div class="surface rounded-lg p-4 border mb-2">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="file-code-2" class="w-4 h-4" style="color: var(--success)"></i>
+              <span class="text-sm font-mono" style="color: var(--success)">你的代码</span>
+            </div>
+            <pre class="font-mono text-sm overflow-x-auto mb-3" id="user-code" style="color: var(--text)"></pre>
+            <div class="border-t pt-2" style="border-color: var(--border)">
+              <div class="flex items-center gap-2 mb-1">
+                <i data-lucide="terminal" class="w-3 h-3" style="color: var(--success)"></i>
+                <span class="text-xs font-mono" style="color: var(--success)">终端输出</span>
+              </div>
+              <pre class="font-mono text-xs p-2 rounded" id="user-output" style="background: rgba(0,0,0,0.3); color: #4caf50"></pre>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="surface rounded-lg p-4 border mb-2">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="book-open" class="w-4 h-4" style="color: var(--primary)"></i>
+              <span class="text-sm font-mono" style="color: var(--primary)">参考答案</span>
+            </div>
+            <pre class="font-mono text-sm overflow-x-auto mb-3" id="reference-answer" style="color: var(--text)"></pre>
+            <div class="border-t pt-2" style="border-color: var(--border)">
+              <div class="flex items-center gap-2 mb-1">
+                <i data-lucide="terminal" class="w-3 h-3" style="color: var(--primary)"></i>
+                <span class="text-xs font-mono" style="color: var(--primary)">终端输出</span>
+              </div>
+              <pre class="font-mono text-xs p-2 rounded" id="reference-output" style="background: rgba(0,0,0,0.3); color: #4caf50"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="surface rounded-lg p-4 border mb-6">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="info" class="w-4 h-4" style="color: var(--comment)"></i>
+          <span class="text-sm font-mono" style="color: var(--comment)">解析</span>
+        </div>
+        <p id="explanation" style="color: var(--comment)"></p>
+      </div>
+      
+      <a href="levels.html" id="next-btn" class="block w-full py-3 px-6 rounded-lg font-semibold text-center transition-all hover:opacity-90 flex items-center justify-center gap-2" style="background: var(--success); color: white">
+        🚀 继续冒险
+        <span class="text-sm opacity-80">或按 <kbd class="px-2 py-0.5 bg-white bg-opacity-20 rounded text-xs font-mono">空格键</kbd></span>
+      </a>
+    </div>
+
+    <!-- 错误结果 -->
+    <div id="error-section" class="hidden surface rounded-xl p-6 border mb-8" style="border-color: var(--error)">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(248, 81, 73, 0.2)">
+          <i data-lucide="circle-x" class="w-6 h-6" style="color: var(--error)"></i>
+        </div>
+        <h3 class="text-lg font-semibold" style="color: var(--text)">❌ 再试一次</h3>
+      </div>
+      <div id="error-details" class="mb-4" style="color: var(--comment)"></div>
+      <button onclick="hideError()" class="text-sm font-medium" style="color: var(--primary)">关闭</button>
+    </div>
+  </main>
+
+  <script>
+    // 主题配置
+    const themes = {
+      dark: { name: '🌙 极夜黑', vs: 'vs-dark' },
+      duolingo: { name: '🌿 护眼绿', vs: 'vs' },
+      python: { name: '🐍 科技蓝', vs: 'vs-dark' },
+      github: { name: '💻 代码灰', vs: 'vs-dark' }
+    };
+    
+    // 主题切换菜单
+    function toggleThemeMenu() {
+      document.getElementById('theme-menu').classList.toggle('hidden');
+    }
+    
+    function setTheme(themeId) {
+      document.documentElement.setAttribute('data-theme', themeId);
+      localStorage.setItem('codequest_theme', themeId);
+      document.getElementById('theme-menu').classList.add('hidden');
+      document.getElementById('current-theme-name').textContent = themes[themeId].name;
+      
+      // 更新 Monaco 编辑器主题
+      if (editor && monaco) {
+        monaco.editor.setTheme(themes[themeId].vs);
+      }
+    }
+    
+    // 点击外部关闭菜单
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('theme-menu');
+      if (!e.target.closest('.relative') && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
+    
+    let editor = null;
+    let questionsData = {};
+    let currentQuestion = null;
+    let nextQuestionId = null;
+    
+    // 学习时间追踪
+    let startTime = null;
+    let timerInterval = null;
+
+    // 初始化 Monaco Editor
+    function initEditor() {
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+      
+      // 先加载题目数据（不依赖 Monaco）
+      loadQuestions();
+      
+      require(['vs/editor/editor.main'], () => {
+        const savedTheme = localStorage.getItem('codequest_theme') || 'dark';
+        editor = monaco.editor.create(document.getElementById('monaco-container'), {
+          value: '# 在这里写你的 Python 代码\n',
+          language: 'python',
+          theme: themes[savedTheme].vs,
+          fontSize: 14,
+          fontFamily: 'JetBrains Mono',
+          minimap: { enabled: false },
+          lineNumbers: 'on',
+          roundedSelection: true,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+          tabSize: 4,
+          wordWrap: 'on',
+          padding: { top: 16, bottom: 16 },
+          // 禁用编辑器滚动，让鼠标滚轮滚动页面
+          scrollBeyondLastColumn: 0,
+          horizontalScroll: 'hidden',
+          verticalScroll: 'hidden'
+        });
+        
+        // 禁用鼠标滚轮滚动编辑器
+        editor.onDidScrollChange(() => {
+          editor.setScrollPosition({ scrollTop: 0 });
+        });
+        
+        // 监听 Shift+Enter 运行代码
+        editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => {
+          submitCode();
+        });
+        
+        // 更新主题名称显示
+        document.getElementById('current-theme-name').textContent = themes[savedTheme].name;
+        
+        console.log('Monaco Editor 初始化完成');
+      });
+    }
+
+    // 加载题目数据
+    async function loadQuestions() {
+      try {
+        console.log('开始加载题目...');
+        const response = await fetch('content/questions.json');
+        console.log('响应状态:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        questionsData = await response.json();
+        console.log('题目数据加载成功，共', questionsData.levels.length, '关');
+        
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get('id')) || 1;
+        console.log('当前题目 ID:', id);
+        
+        loadQuestion(id);
+      } catch (error) {
+        console.error('加载失败:', error);
+        document.getElementById('question-title').textContent = '❌ 加载失败';
+        document.getElementById('question-story').textContent = '无法加载题目数据，请检查 content/questions.json 文件是否存在';
+        document.getElementById('question-content').textContent = `错误信息：${error.message}`;
+      }
+    }
+
+    // 加载单个题目
+    function loadQuestion(id) {
+      console.log('加载题目', id, '，数据:', questionsData ? '有' : '无');
+      
+      if (!questionsData || !questionsData.levels) {
+        console.error('题目数据为空');
+        document.getElementById('question-title').textContent = '❌ 题目数据为空';
+        return;
+      }
+      
+      for (const level of questionsData.levels) {
+        const q = level.questions.find(q => q.id === id);
+        if (q) {
+          currentQuestion = { ...q, levelTitle: level.title };
+          nextQuestionId = findNextQuestionId(id);
+          console.log('找到题目:', q.title);
+          break;
+        }
+      }
+      
+      if (!currentQuestion) {
+        document.getElementById('question-title').textContent = '❌ 题目不存在';
+        console.error('未找到题目 ID:', id);
+        return;
+      }
+      
+      // 更新页面
+      document.getElementById('question-badge').textContent = `#${id.toString().padStart(2, '0')}`;
+      document.getElementById('level-info').textContent = currentQuestion.levelTitle;
+      document.getElementById('question-title').textContent = currentQuestion.title;
+      document.getElementById('question-story').textContent = currentQuestion.story || currentQuestion.content;
+      document.getElementById('question-content').textContent = currentQuestion.content;
+      document.getElementById('xp-display').textContent = `+${currentQuestion.points} XP`;
+      document.getElementById('hint-usage').textContent = currentQuestion.hint || currentQuestion.explanation;
+      document.getElementById('reference-answer').textContent = currentQuestion.answer;
+      document.getElementById('explanation').textContent = currentQuestion.explanation;
+      
+      // 难度颜色
+      const badge = document.getElementById('question-badge');
+      const colors = {
+        easy: { bg: 'rgba(76, 175, 80, 0.2)', text: '#4caf50' },
+        medium: { bg: 'rgba(255, 193, 7, 0.2)', text: '#ffc107' },
+        hard: { bg: 'rgba(244, 67, 54, 0.2)', text: '#f44336' }
+      };
+      const color = colors[currentQuestion.difficulty] || colors.easy;
+      badge.style.background = color.bg;
+      badge.style.color = color.text;
+      
+      // 重置编辑器
+      if (editor) {
+        editor.setValue('');
+        editor.focus();
+      }
+      
+      hideResults();
+      
+      console.log('题目加载完成');
+    }
+
+    // 查找下一题
+    function findNextQuestionId(currentId) {
+      for (const level of questionsData.levels) {
+        for (const q of level.questions) {
+          if (q.id === currentId + 1) return q.id;
+        }
+      }
+      return null;
+    }
+
+    // 重置代码
+    function resetCode() {
+      if (editor) editor.setValue('');
+      hideResults();
+      startStudyTimer();
+    }
+
+    // 显示/隐藏提示
+    function toggleHint() {
+      const section = document.getElementById('hint-section');
+      const errorAnalysis = document.getElementById('hint-error-analysis');
+      const code = editor ? editor.getValue() : '';
+      
+      if (code.trim()) {
+        // 有代码时显示错误分析
+        const errors = analyzeCode(code);
+        if (errors.length > 0) {
+          const errorList = document.getElementById('error-list');
+          errorList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+          errorAnalysis.classList.remove('hidden');
+        } else {
+          errorAnalysis.classList.add('hidden');
+        }
+      } else {
+        errorAnalysis.classList.add('hidden');
+      }
+      
+      section.classList.toggle('hidden');
+      // 关闭答案区域
+      document.getElementById('answer-section').classList.add('hidden');
+    }
+    
+    // 显示/隐藏正确答案
+    function toggleAnswer() {
+      const section = document.getElementById('answer-section');
+      const hintSection = document.getElementById('hint-section');
+      
+      if (section.classList.contains('hidden')) {
+        // 显示答案
+        document.getElementById('reference-code').textContent = currentQuestion.answer;
+        document.getElementById('reference-explanation').textContent = currentQuestion.explanation;
+        section.classList.remove('hidden');
+        // 高亮答案代码
+        setTimeout(() => {
+          const codeBlock = document.getElementById('reference-code');
+          codeBlock.innerHTML = `<code class="language-python">${codeBlock.textContent}</code>`;
+          if (typeof Prism !== 'undefined') {
+            Prism.highlightAll();
+          }
+        }, 100);
+      } else {
+        section.classList.add('hidden');
+      }
+      
+      // 关闭提示区域
+      hintSection.classList.add('hidden');
+    }
+
+    // 代码分析（智能提示）
+    function analyzeCode(code) {
+      const errors = [];
+      const q = currentQuestion;
+      
+      if (!code.trim()) {
+        errors.push('代码是空的，请先写代码');
+        return errors;
+      }
+      
+      // 检查常见错误
+      if (q.id === 1 && !code.includes('=')) {
+        errors.push('缺少赋值运算符 =，应该是 name = \'你的名字\'');
+      }
+      if (q.id === 1 && !code.includes('name')) {
+        errors.push('变量名应该是 name，不是其他名字');
+      }
+      if (q.id === 1 && !code.includes("'") && !code.includes('"')) {
+        errors.push('字符串需要用引号包裹，单引号或双引号都可以');
+      }
+      if (code.includes('print') && !code.includes('print(')) {
+        errors.push('print 是函数，需要加括号 print()');
+      }
+      if (code.includes('def') && !code.includes(':')) {
+        errors.push('函数定义末尾需要冒号 :');
+      }
+      if (code.includes('if') && !code.includes(':')) {
+        errors.push('if 条件语句末尾需要冒号 :');
+      }
+      if (code.includes('for') && !code.includes(':')) {
+        errors.push('for 循环末尾需要冒号 :');
+      }
+      if (code.match(/for\s+\w+\s+in\s+\w+/) && !code.includes(':')) {
+        errors.push('for 循环语句末尾需要冒号');
+      }
+      
+      // 检查缩进（简单检测）
+      if (code.includes('    ') === false && (code.includes('if') || code.includes('for') || code.includes('def'))) {
+        errors.push('Python 需要缩进，if/for/def 下面的代码需要空 4 格');
+      }
+      
+      // 通用检查
+      if (code.includes('import') && code.match(/import\s+\d/)) {
+        errors.push('import 后面应该是模块名，不能是数字');
+      }
+      
+      return errors;
+    }
+
+    // 提交代码
+    function submitCode() {
+      const code = editor ? editor.getValue().trim() : '';
+      if (!code) {
+        showError('请先写代码再提交！');
+        return;
+      }
+      
+      const result = checkAnswer(code);
+      
+      if (result.correct) {
+        showSuccess(code);
+        saveProgress(currentQuestion.id);
+      } else {
+        showError(result.message);
+      }
+    }
+
+    // 判题逻辑（增强版）
+    function checkAnswer(code) {
+      const q = currentQuestion;
+      if (!q) return { correct: false, message: '题目加载失败' };
+      
+      const cleanCode = code.replace(/#.*/g, '').trim();
+      
+      // 逐题判题
+      if (q.id === 1) {
+        if (!cleanCode.includes('name') || !cleanCode.includes('=')) {
+          return { correct: false, message: '需要创建名为 name 的变量，使用 = 赋值' };
+        }
+        if (!cleanCode.includes("'") && !cleanCode.includes('"')) {
+          return { correct: false, message: '字符串需要用引号包裹' };
+        }
+        return { correct: true };
+      }
+      
+      if (q.id === 2) {
+        if (!cleanCode.includes('age') || !cleanCode.includes('=')) {
+          return { correct: false, message: '需要创建名为 age 的变量' };
+        }
+        if (!/\d+/.test(cleanCode)) {
+          return { correct: false, message: '年龄应该是数字，不需要引号' };
+        }
+        return { correct: true };
+      }
+      
+      if (q.id === 7) {
+        if (!cleanCode.includes('print(')) {
+          return { correct: false, message: '需要使用 print() 函数' };
+        }
+        if (!cleanCode.includes('Hello Python')) {
+          return { correct: false, message: '输出内容应该是 \'Hello Python\'' };
+        }
+        return { correct: true };
+      }
+      
+      if (q.id === 13) {
+        if (!cleanCode.includes('for') || !cleanCode.includes('in')) {
+          return { correct: false, message: '需要使用 for 循环' };
+        }
+        if (!cleanCode.includes('range')) {
+          return { correct: false, message: '需要使用 range() 生成数字序列' };
+        }
+        return { correct: true };
+      }
+      
+      if (q.id === 21) {
+        if (!cleanCode.includes('def')) {
+          return { correct: false, message: '需要使用 def 定义函数' };
+        }
+        if (!cleanCode.includes('greet')) {
+          return { correct: false, message: '函数名应该是 greet' };
+        }
+        return { correct: true };
+      }
+      
+      // 默认判题
+      const cleanAnswer = q.answer.replace(/#.*/g, '').trim();
+      const answerKey = cleanAnswer.split('=')[0]?.trim();
+      if (answerKey && cleanCode.includes(answerKey)) {
+        return { correct: true };
+      }
+      
+      return { correct: false, message: '代码不正确，检查变量名、语法和题目要求，或点击"提示"查看帮助' };
+    }
+
+    // 显示成功
+    function showSuccess(code) {
+      document.getElementById('user-code').textContent = code;
+      document.getElementById('xp-gained').textContent = currentQuestion.points;
+      
+      // 生成终端输出
+      const userOutput = simulateExecution(code);
+      const referenceOutput = simulateExecution(currentQuestion.answer);
+      
+      document.getElementById('user-output').textContent = userOutput;
+      document.getElementById('reference-output').textContent = referenceOutput;
+      
+      document.getElementById('success-section').classList.remove('hidden');
+      document.getElementById('error-section').classList.add('hidden');
+      
+      // 高亮代码（排除终端输出区域）
+      setTimeout(() => {
+        const codeBlocks = document.querySelectorAll('#user-code, #reference-answer');
+        codeBlocks.forEach(block => {
+          block.innerHTML = `<code class="language-python">${block.textContent}</code>`;
+        });
+        if (typeof Prism !== 'undefined') {
+          Prism.highlightAll();
+        }
+      }, 100);
+      
+      // 设置下一关链接
+      const nextBtn = document.getElementById('next-btn');
+      if (nextQuestionId) {
+        nextBtn.href = `question.html?id=${nextQuestionId}`;
+      } else {
+        nextBtn.href = 'levels.html';
+        nextBtn.innerHTML = '🎉 返回地图 <span class="text-sm opacity-80 ml-2">或按 <kbd class="px-2 py-0.5 bg-white bg-opacity-20 rounded text-xs font-mono">空格键</kbd></span>';
+      }
+    }
+    
+    // 模拟代码执行（生成终端输出）
+    function simulateExecution(code) {
+      const q = currentQuestion;
+      if (!q) return '> 错误：题目数据丢失';
+      
+      // 提取代码中的关键信息生成输出
+      const cleanCode = code.replace(/#.*/g, '').trim();
+      
+      // 根据题目类型生成输出
+      if (q.id === 1) { // 创建变量 name
+        const match = cleanCode.match(/name\s*=\s*['"](.*?)['"]/);
+        if (match) {
+          return `> ${match[1]}`;
+        }
+        return '> 错误：变量未正确赋值';
+      }
+      
+      if (q.id === 2) { // 年龄变量
+        const match = cleanCode.match(/age\s*=\s*(\d+)/);
+        if (match) {
+          return `> ${match[1]}`;
+        }
+        return '> 错误：年龄应该是数字';
+      }
+      
+      if (q.id === 3) { // 身高变量
+        const match = cleanCode.match(/height\s*=\s*([\d.]+)/);
+        if (match) {
+          return `> ${match[1]}`;
+        }
+        return '> 错误：身高应该是数字';
+      }
+      
+      if (q.id === 4) { // 加法
+        return '> 30';
+      }
+      
+      if (q.id === 5) { // 乘法
+        return '> 30';
+      }
+      
+      if (q.id === 6) { // 字符串拼接
+        return '> HelloWorld';
+      }
+      
+      if (q.id === 7) { // print
+        const match = cleanCode.match(/print\(['"](.*?)['"]\)/);
+        if (match) {
+          return `> ${match[1]}`;
+        }
+        return '> 错误：print 参数错误';
+      }
+      
+      if (q.id === 8) { // str 转换
+        return "> '100'";
+      }
+      
+      if (q.id === 9) { // int 转换
+        return '> 2024';
+      }
+      
+      if (q.id === 10) { // 圆面积
+        return '> 78.5';
+      }
+      
+      if (q.id === 13) { // for 循环
+        return '> 1\n> 2\n> 3\n> 4\n> 5';
+      }
+      
+      if (q.id === 14) { // 累加
+        return '> 55';
+      }
+      
+      if (q.id === 15) { // while 倒计时
+        return '> 5\n> 4\n> 3\n> 2\n> 1';
+      }
+      
+      if (q.id === 17) { // 遍历列表
+        return '> apple\n> banana\n> orange';
+      }
+      
+      if (q.id === 19) { // 列表长度
+        return '> 3';
+      }
+      
+      if (q.id === 21) { // 函数定义
+        return '> （函数已定义，无输出）';
+      }
+      
+      if (q.id === 22) { // 带参数函数
+        return '> Hello, Python';
+      }
+      
+      if (q.id === 23 || q.id === 24) { // 函数返回值
+        return '> 8';
+      }
+      
+      if (q.id === 26) { // math.sqrt
+        return '> 4.0';
+      }
+      
+      if (q.id === 28) { // 字典访问
+        return '> 小明';
+      }
+      
+      if (q.id === 29) { // 字典遍历
+        return '> name: 小明\n> age: 20';
+      }
+      
+      if (q.id === 30) { // 计算器函数
+        return '> （函数已定义，调用 calculate(5,3,"+") 返回 8）';
+      }
+      
+      // 默认输出
+      return '> 代码执行成功';
+    }
+
+    // 显示错误
+    function showError(msg) {
+      document.getElementById('error-details').innerHTML = `<p>${msg}</p><p class="mt-2 text-sm">💡 点击"提示"按钮可以查看更详细的错误分析和用法说明</p>`;
+      document.getElementById('error-section').classList.remove('hidden');
+      document.getElementById('success-section').classList.add('hidden');
+    }
+
+    // 隐藏结果
+    function hideError() {
+      document.getElementById('error-section').classList.add('hidden');
+    }
+
+    function hideResults() {
+      document.getElementById('success-section').classList.add('hidden');
+      document.getElementById('error-section').classList.add('hidden');
+    }
+
+    // 保存进度
+    function saveProgress(questionId) {
+      const progress = JSON.parse(localStorage.getItem('codequest_progress') || '{}');
+      progress[questionId] = { completed: true, timestamp: Date.now() };
+      localStorage.setItem('codequest_progress', JSON.stringify(progress));
+      
+      const completed = Object.keys(progress).length;
+      const totalXP = completed * 10;
+      localStorage.setItem('codequest_xp', totalXP);
+    }
+
+    // 空格键下一关
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        const successSection = document.getElementById('success-section');
+        if (!successSection.classList.contains('hidden')) {
+          e.preventDefault();
+          const nextBtn = document.getElementById('next-btn');
+          if (nextBtn) nextBtn.click();
+        }
+      }
+    });
+
+    // 初始化（Monaco 编辑器 + 题目加载）
+    initEditor();
+
+    // 学习时间追踪
+    function startStudyTimer() {
+      startTime = Date.now();
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const totalTime = parseInt(localStorage.getItem('codequest_study_time') || '0');
+        localStorage.setItem('codequest_study_time', (totalTime + elapsed).toString());
+        startTime = Date.now();
+      }, 1000);
+    }
+    
+    function saveStudyTime() {
+      if (startTime && timerInterval) {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const totalTime = parseInt(localStorage.getItem('codequest_study_time') || '0');
+        localStorage.setItem('codequest_study_time', (totalTime + elapsed).toString());
+        clearInterval(timerInterval);
+        startTime = null;
+        timerInterval = null;
+      }
+    }
+    
+    // 页面关闭时保存
+    window.addEventListener('beforeunload', saveStudyTime);
+    window.addEventListener('pagehide', saveStudyTime);
+
+    // 初始化
+    loadQuestions();
+    lucide.createIcons();
+  </script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
