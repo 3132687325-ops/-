@@ -3,40 +3,32 @@ const { getDb } = require('../database');
 
 const router = express.Router();
 
-// 获取所有用户统计
+// 获取所有用户列表
 router.get('/users', (req, res) => {
   try {
     const db = getDb();
-    const users = db.prepare(`
+    const stmt = db.prepare(`
       SELECT 
-        u.id,
-        u.qq,
-        u.created_at,
-        u.last_login,
-        COUNT(p.id) as totalQuestions,
-        SUM(CASE WHEN p.completed = 1 THEN 1 ELSE 0 END) as completedQuestions,
-        SUM(p.xp) as totalXp,
-        SUM(p.time_spent) as totalTime
-      FROM users u
-      LEFT JOIN progress p ON u.id = p.user_id
-      GROUP BY u.id
-      ORDER BY u.created_at DESC
-    `).all();
+        id,
+        name,
+        email,
+        qq,
+        role,
+        created_at,
+        last_login
+      FROM users
+      ORDER BY created_at DESC
+    `);
+    
+    const users = [];
+    while (stmt.step()) {
+      users.push(stmt.getAsObject());
+    }
+    stmt.free();
     
     res.json({
       success: true,
-      users: users.map(u => ({
-        id: u.id,
-        qq: u.qq,
-        registeredAt: u.created_at,
-        lastLogin: u.last_login,
-        stats: {
-          totalQuestions: u.totalQuestions || 0,
-          completed: u.completedQuestions || 0,
-          xp: u.totalXp || 0,
-          studyTime: u.totalTime || 0
-        }
-      }))
+      users: users
     });
   } catch (error) {
     console.error('获取用户列表失败:', error);

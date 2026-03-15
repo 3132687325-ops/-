@@ -70,8 +70,8 @@
       <div class="flex items-center gap-3">
         <div id="nav-user-levels" class="flex items-center gap-2 text-sm">
           <span id="nav-user-name-levels" class="hidden max-w-[100px] truncate" style="color: var(--text)"></span>
-          <a href="login.html" id="nav-logout-levels" class="hidden text-sm hover:opacity-80" style="color: var(--comment)">退出</a>
-          <a href="login.html" id="nav-login-levels" class="text-sm" style="color: var(--comment)">登录</a>
+          <a href="login-strict.html" id="nav-logout-levels" class="hidden text-sm hover:opacity-80" style="color: var(--comment)">退出</a>
+          <a href="login-strict.html" id="nav-login-levels" class="text-sm" style="color: var(--comment)">登录</a>
           <a href="register.html" id="nav-register-levels" class="text-sm px-2 py-1 rounded" style="background: var(--primary); color: white">注册</a>
         </div>
         <div class="relative">
@@ -311,7 +311,7 @@
         const registerEl = document.getElementById('nav-register-levels');
         if (user && (user.qq || user.email)) {
           if (nameEl) { nameEl.textContent = user.name || user.qq || user.email || '用户'; nameEl.classList.remove('hidden'); }
-          if (logoutEl) { logoutEl.classList.remove('hidden'); logoutEl.onclick = function(e) { e.preventDefault(); localStorage.removeItem('codequest_token'); localStorage.removeItem('codequest_user'); window.location.href = 'login.html'; }; }
+          if (logoutEl) { logoutEl.classList.remove('hidden'); logoutEl.onclick = function(e) { e.preventDefault(); localStorage.removeItem('codequest_token'); localStorage.removeItem('codequest_user'); window.location.href = 'login-strict.html'; }; }
           if (loginEl) loginEl.classList.add('hidden');
           if (registerEl) registerEl.classList.add('hidden');
         } else {

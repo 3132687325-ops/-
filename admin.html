@@ -196,7 +196,7 @@
     async function checkAuth() {
       const token = localStorage.getItem('codequest_token');
       if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = 'login-strict.html';
         return;
       }
       
@@ -209,7 +209,7 @@
         
         if (!data.success) {
           localStorage.removeItem('codequest_token');
-          window.location.href = 'login.html';
+          window.location.href = 'login-strict.html';
           return;
         }
         
@@ -235,7 +235,7 @@
       } catch (error) {
         console.error('认证失败:', error);
         localStorage.removeItem('codequest_token');
-        window.location.href = 'login.html';
+        window.location.href = 'login-strict.html';
       }
     }
     
@@ -341,7 +341,7 @@
       if (confirm('确定要退出登录吗？')) {
         localStorage.removeItem('codequest_token');
         localStorage.removeItem('codequest_user');
-        window.location.href = 'login.html';
+        window.location.href = 'login-strict.html';
       }
     }
     
